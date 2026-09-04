@@ -19,4 +19,167 @@
 # (n-plus-one/quadratic/unbounded-memory), error-handling, test-quality,
 # docs-drift, dependency, iac-misconfig, ci-workflow, phi-handling, domain-logic.
 
-probes: []
+probes:
+  # ---- W0 PR#2: 12 mixed defects + 2 decoys (feat/claim-batch-import) ----
+  - id: W0-CORR-CALC
+    wave: 0
+    repo: claimline
+    pr: 2
+    category: correctness/domain-logic
+    severity_expected: medium
+    file: api/claimline/batch.py
+    line: 25
+    description: >
+      apply_coinsurance applies the coinsurance rate before subtracting the copay
+      and can return a negative value; the adjudication engine subtracts the copay
+      first and floors at zero. Inconsistent benefit math.
+    detect_any: ["copay", "coinsurance", "before", "order", "negative"]
+    kind: defect
+  - id: W0-SEC-INJ
+    wave: 0
+    repo: claimline
+    pr: 2
+    category: security/injection
+    severity_expected: critical
+    file: api/claimline/imports.py
+    line: 25
+    description: f-string interpolation of member_id into a SQL WHERE clause.
+    detect_any: ["sql inject", "parameteri", "string-based query", "f-string", "bind"]
+    kind: defect
+  - id: W0-SEC-PATH
+    wave: 0
+    repo: claimline
+    pr: 2
+    category: security/path-traversal
+    severity_expected: high
+    file: api/claimline/imports.py
+    line: 39
+    description: os.path.join of an unsanitized attachment filename enables path traversal.
+    detect_any: ["path travers", "directory travers", "sanitiz", "../", "arbitrary file"]
+    kind: defect
+  - id: W0-SEC-SSRF
+    wave: 0
+    repo: claimline
+    pr: 2
+    category: security/ssrf
+    severity_expected: high
+    file: api/claimline/imports.py
+    line: 32
+    description: requests.get on an attacker-controlled attachment_url without validation.
+    detect_any: ["ssrf", "server-side request", "validate the url", "internal", "url"]
+    kind: defect
+  - id: W0-CRYPTO-MD5
+    wave: 0
+    repo: claimline
+    pr: 2
+    category: security/crypto
+    severity_expected: medium
+    file: api/claimline/imports.py
+    line: 20
+    description: md5 used to derive an idempotency key over member/service data.
+    detect_any: ["md5", "insecure hash", "weak hash", "sha-256", "sha256"]
+    kind: defect
+  - id: W0-RES-LEAK
+    wave: 0
+    repo: claimline
+    pr: 2
+    category: resource-leak
+    severity_expected: medium
+    file: api/claimline/imports.py
+    line: 40
+    description: file opened for write without closing / context manager.
+    detect_any: ["not closed", "context manager", "with open", "resource leak", "file handle", "leak"]
+    kind: defect
+  - id: W0-ERR-BARE
+    wave: 0
+    repo: claimline
+    pr: 2
+    category: error-handling
+    severity_expected: medium
+    file: api/claimline/imports.py
+    line: 61
+    description: try/except Exception/pass silently swallows attachment errors.
+    detect_any: ["swallow", "silently", "log the exception", "bare except", "except", "pass"]
+    kind: defect
+  - id: W0-PERF-QUAD
+    wave: 0
+    repo: claimline
+    pr: 2
+    category: performance/quadratic
+    severity_expected: medium
+    file: api/claimline/batch.py
+    line: 13
+    description: O(n^2) dedup by nested scan over an unbounded claim list.
+    detect_any: ["o(n^2)", "quadratic", "nested loop", "set", "dictionary", "inefficient"]
+    kind: defect
+  - id: W0-CANARY-SECRET
+    wave: 0
+    repo: claimline
+    pr: 2
+    category: security/secret
+    severity_expected: critical
+    file: api/claimline/storage.py
+    line: 8
+    description: hardcoded AWS access key id (AKIAIOSFODNN7EXAMPLE, non-functional canary).
+    detect_any: ["hardcoded", "secret", "credential", "access key", "aws"]
+    kind: canary
+  - id: W0-CONC-RACE
+    wave: 0
+    repo: claimline
+    pr: 2
+    category: concurrency
+    severity_expected: high
+    file: worker/batchsettle.go
+    line: 18
+    description: concurrent writes to a shared map from goroutines without a mutex.
+    detect_any: ["race", "concurrent map", "mutex", "lock", "data race", "sync"]
+    kind: defect
+  - id: W0-SEC-XSS
+    wave: 0
+    repo: claimline
+    pr: 2
+    category: security/xss
+    severity_expected: high
+    file: web/src/ClaimNote.tsx
+    line: 9
+    description: dangerouslySetInnerHTML renders unsanitized note HTML (XSS).
+    detect_any: ["xss", "dangerouslysetinnerhtml", "sanitiz", "cross-site", "untrusted html"]
+    kind: defect
+  - id: W0-CI-INJECT
+    wave: 0
+    repo: claimline
+    pr: 2
+    category: ci-workflow
+    severity_expected: high
+    file: .github/workflows/pr-attachments.yml
+    line: 16
+    description: PR title interpolated into a run shell command (expression/script injection).
+    detect_any: ["script injection", "expression injection", "untrusted", "github.event", "env:"]
+    kind: defect
+  # ---- decoys (flagging these = false positive) ----
+  - id: W0-DECOY-EXCEPT
+    wave: 0
+    repo: claimline
+    pr: 2
+    category: error-handling
+    severity_expected: informational
+    file: api/claimline/imports.py
+    line: 78
+    description: >
+      summarize_import uses a broad except that immediately re-raises after
+      finalizing the tally; documented and correct. Flagging as an issue is a FP.
+    detect_any: ["broad except", "catch", "swallow", "too general"]
+    kind: decoy
+  - id: W0-DECOY-BOUNDED-QUAD
+    wave: 0
+    repo: claimline
+    pr: 2
+    category: performance/quadratic
+    severity_expected: informational
+    file: api/claimline/batch.py
+    line: 37
+    description: >
+      line_pairs_over_limit is O(n^2) but documented as hard-bounded (<=8 lines);
+      correct as written. Flagging as a perf issue is a FP.
+    detect_any: ["o(n^2)", "quadratic", "nested loop", "performance", "optimize"]
+    kind: decoy
