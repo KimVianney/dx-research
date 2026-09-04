@@ -1,0 +1,167 @@
+{
+  "repo": "claimline",
+  "pr": 3,
+  "totals": {
+    "tp": 10,
+    "fn": 0,
+    "fp": 0,
+    "recall": 1.0,
+    "precision": 1.0
+  },
+  "per_category": {
+    "correctness/boundary": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0
+    },
+    "correctness": {
+      "tp": 6,
+      "fn": 0,
+      "fp": 0
+    },
+    "correctness/foot-gun": {
+      "tp": 1,
+      "fn": 0,
+      "fp": 0
+    }
+  },
+  "entries": [
+    {
+      "id": "W1C-AGING-GAP",
+      "kind": "defect",
+      "category": "correctness/boundary",
+      "outcome": "TP",
+      "matched_comment_id": 3938299886
+    },
+    {
+      "id": "W1C-DATE-RANGE",
+      "kind": "defect",
+      "category": "correctness/boundary",
+      "outcome": "TP",
+      "matched_comment_id": 3938299890
+    },
+    {
+      "id": "W1C-AVG-TRUNC",
+      "kind": "defect",
+      "category": "correctness",
+      "outcome": "TP",
+      "matched_comment_id": 3938299895
+    },
+    {
+      "id": "W1C-PCT-TRUNC",
+      "kind": "defect",
+      "category": "correctness",
+      "outcome": "TP",
+      "matched_comment_id": 3938299886
+    },
+    {
+      "id": "W1C-LATEFEE-SIGN",
+      "kind": "defect",
+      "category": "correctness",
+      "outcome": "TP",
+      "matched_comment_id": 3938299904
+    },
+    {
+      "id": "W1C-TIMELY-BOUND",
+      "kind": "defect",
+      "category": "correctness/boundary",
+      "outcome": "TP",
+      "matched_comment_id": 3938299890
+    },
+    {
+      "id": "W1C-MUT-DEFAULT",
+      "kind": "defect",
+      "category": "correctness/foot-gun",
+      "outcome": "TP",
+      "matched_comment_id": 3938299918
+    },
+    {
+      "id": "W1C-TOP-ORDER",
+      "kind": "defect",
+      "category": "correctness",
+      "outcome": "TP",
+      "matched_comment_id": 3938299927
+    },
+    {
+      "id": "W1C-ROUND-TRUNC",
+      "kind": "defect",
+      "category": "correctness",
+      "outcome": "TP",
+      "matched_comment_id": 3938299886
+    },
+    {
+      "id": "W1C-BALANCE-ACC",
+      "kind": "defect",
+      "category": "correctness",
+      "outcome": "TP",
+      "matched_comment_id": 3938299886
+    },
+    {
+      "id": "W1C-DECOY-HALFUP",
+      "kind": "decoy",
+      "category": "correctness",
+      "outcome": "OK (decoy not flagged)",
+      "matched_comment_id": null
+    },
+    {
+      "id": "W1C-DECOY-INCLUSIVE",
+      "kind": "decoy",
+      "category": "correctness/boundary",
+      "outcome": "OK (decoy not flagged)",
+      "matched_comment_id": null
+    },
+    {
+      "id": "W1C-DECOY-SAFERATIO",
+      "kind": "decoy",
+      "category": "correctness",
+      "outcome": "OK (decoy not flagged)",
+      "matched_comment_id": null
+    }
+  ],
+  "unmatched_bot_comments": [
+    {
+      "id": 3938299897,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/reporting.py",
+      "line": 42,
+      "excerpt": "_\ud83e\ude7a Stability & Availability_ | _\ud83d\udfe1 Minor_ | _\u26a1 Quick win_\n\n**Guard a zero `allowed_cents` value.**\n\nA zero allowed amount raises `ZeroDivisionError`. Handle this"
+    },
+    {
+      "id": 3938299912,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/reporting.py",
+      "line": 52,
+      "excerpt": "_\ud83c\udfaf Functional Correctness_ | _\ud83d\udfe1 Minor_ | _\u26a1 Quick win_\n\n<details>\n<summary>\ud83d\udd0e Supported by static analysis</summary>\n\n\ud83c\udfc1 Script executed:\n\n```shell\nsed -n '1,120p"
+    },
+    {
+      "id": 3938299930,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/reporting.py",
+      "line": 70,
+      "excerpt": "_\ud83c\udfaf Functional Correctness_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win_\n\n**Implement nearest-dollar rounding.**\n\n`int(cents / 100) * 100` truncates instead of rounding. For exam"
+    },
+    {
+      "id": 3938299934,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/reporting.py",
+      "line": 77,
+      "excerpt": "_\ud83c\udfaf Functional Correctness_ | _\ud83d\udfe1 Minor_ | _\u26a1 Quick win_\n\n<details>\n<summary>\ud83d\udd0e Supported by static analysis</summary>\n\n\ud83c\udfc1 Script executed:\n\n```shell\n#!/bin/bash\nse"
+    },
+    {
+      "id": 3938299940,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/reporting.py",
+      "line": 78,
+      "excerpt": "_\ud83c\udfaf Functional Correctness_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win_\n\n**Accumulate the prior balance.**\n\n`balance = charge - payment` overwrites the previous balance. Use `ba"
+    },
+    {
+      "id": 5547151116,
+      "user": "coderabbitai[bot]",
+      "path": null,
+      "line": null,
+      "excerpt": "<!-- This is an auto-generated comment: summarize by coderabbit.ai -->\n<!-- review_stack_entry_start -->\n\n[![Review Change Stack](https://storage.googleapis.com"
+    }
+  ],
+  "bot_comment_count": 12,
+  "evidence_pr": 5
+}

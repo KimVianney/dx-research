@@ -1,0 +1,252 @@
+{
+  "repo": "claimline",
+  "pr": 2,
+  "totals": {
+    "tp": 7,
+    "fn": 6,
+    "fp": 0,
+    "recall": 0.5384615384615384,
+    "precision": 1.0
+  },
+  "per_category": {
+    "correctness/domain-logic": {
+      "tp": 1,
+      "fn": 0,
+      "fp": 0
+    },
+    "security/injection": {
+      "tp": 0,
+      "fn": 1,
+      "fp": 0
+    },
+    "security/path-traversal": {
+      "tp": 1,
+      "fn": 0,
+      "fp": 0
+    },
+    "security/ssrf": {
+      "tp": 0,
+      "fn": 1,
+      "fp": 0
+    },
+    "security/crypto": {
+      "tp": 1,
+      "fn": 0,
+      "fp": 0
+    },
+    "resource-leak": {
+      "tp": 0,
+      "fn": 1,
+      "fp": 0
+    },
+    "error-handling": {
+      "tp": 1,
+      "fn": 0,
+      "fp": 0
+    },
+    "performance/quadratic": {
+      "tp": 0,
+      "fn": 1,
+      "fp": 0
+    },
+    "security/secret": {
+      "tp": 0,
+      "fn": 1,
+      "fp": 0
+    },
+    "concurrency": {
+      "tp": 1,
+      "fn": 0,
+      "fp": 0
+    },
+    "security/xss": {
+      "tp": 0,
+      "fn": 1,
+      "fp": 0
+    },
+    "ci-workflow": {
+      "tp": 1,
+      "fn": 0,
+      "fp": 0
+    },
+    "database/migration-safety": {
+      "tp": 1,
+      "fn": 0,
+      "fp": 0
+    }
+  },
+  "entries": [
+    {
+      "id": "W0-CORR-CALC",
+      "kind": "defect",
+      "category": "correctness/domain-logic",
+      "outcome": "TP",
+      "matched_comment_id": 3938318264
+    },
+    {
+      "id": "W0-SEC-INJ",
+      "kind": "defect",
+      "category": "security/injection",
+      "outcome": "FN",
+      "matched_comment_id": null
+    },
+    {
+      "id": "W0-SEC-PATH",
+      "kind": "defect",
+      "category": "security/path-traversal",
+      "outcome": "TP",
+      "matched_comment_id": 3938318287
+    },
+    {
+      "id": "W0-SEC-SSRF",
+      "kind": "defect",
+      "category": "security/ssrf",
+      "outcome": "FN",
+      "matched_comment_id": null
+    },
+    {
+      "id": "W0-CRYPTO-MD5",
+      "kind": "defect",
+      "category": "security/crypto",
+      "outcome": "TP",
+      "matched_comment_id": 3938318282
+    },
+    {
+      "id": "W0-RES-LEAK",
+      "kind": "defect",
+      "category": "resource-leak",
+      "outcome": "FN",
+      "matched_comment_id": null
+    },
+    {
+      "id": "W0-ERR-BARE",
+      "kind": "defect",
+      "category": "error-handling",
+      "outcome": "TP",
+      "matched_comment_id": 3938318300
+    },
+    {
+      "id": "W0-PERF-QUAD",
+      "kind": "defect",
+      "category": "performance/quadratic",
+      "outcome": "FN",
+      "matched_comment_id": null
+    },
+    {
+      "id": "W0-CANARY-SECRET",
+      "kind": "canary",
+      "category": "security/secret",
+      "outcome": "FN",
+      "matched_comment_id": null
+    },
+    {
+      "id": "W0-CONC-RACE",
+      "kind": "defect",
+      "category": "concurrency",
+      "outcome": "TP",
+      "matched_comment_id": 3938318306
+    },
+    {
+      "id": "W0-SEC-XSS",
+      "kind": "defect",
+      "category": "security/xss",
+      "outcome": "FN",
+      "matched_comment_id": null
+    },
+    {
+      "id": "W0-CI-INJECT",
+      "kind": "defect",
+      "category": "ci-workflow",
+      "outcome": "TP",
+      "matched_comment_id": 3938318235
+    },
+    {
+      "id": "W0-SQL-MIGRATE",
+      "kind": "defect",
+      "category": "database/migration-safety",
+      "outcome": "TP",
+      "matched_comment_id": 3938318303
+    },
+    {
+      "id": "W0-BONUS-UNITS",
+      "kind": "bonus",
+      "category": "correctness/domain-logic",
+      "outcome": "not-scored",
+      "matched_comment_id": null
+    },
+    {
+      "id": "W0-BONUS-DEP",
+      "kind": "bonus",
+      "category": "dependency/supply-chain",
+      "outcome": "not-scored",
+      "matched_comment_id": null
+    },
+    {
+      "id": "W0-DECOY-EXCEPT",
+      "kind": "decoy",
+      "category": "error-handling",
+      "outcome": "OK (decoy not flagged)",
+      "matched_comment_id": null
+    },
+    {
+      "id": "W0-DECOY-BOUNDED-QUAD",
+      "kind": "invalid",
+      "category": "performance/quadratic",
+      "outcome": "not-scored",
+      "matched_comment_id": null
+    }
+  ],
+  "unmatched_bot_comments": [
+    {
+      "id": 3938318256,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/batch.py",
+      "line": 15,
+      "excerpt": "_\ud83d\uddc4\ufe0f Data Integrity & Integration_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win_\n\n<details>\n<summary>\ud83d\udd0e Supported by static analysis</summary>\n\n\ud83c\udfc1 Script executed:\n\n```shell\n#!/bin/"
+    },
+    {
+      "id": 3938318271,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/batch.py",
+      "line": 32,
+      "excerpt": "_\ud83d\ude80 Performance & Scalability_ | _\ud83d\udfe1 Minor_ | _\u26a1 Quick win_\n\n<details>\n<summary>\ud83d\udd0e Supported by static analysis</summary>\n\n\ud83c\udfc1 Script executed:\n\n```shell\n#!/bin/bash"
+    },
+    {
+      "id": 3938318276,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/batch.py",
+      "line": 38,
+      "excerpt": "_\ud83d\uddc4\ufe0f Data Integrity & Integration_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win_\n\n**Include line units in over-limit checks.**\n\n`Claim.total_charge_cents` defines a line's charge "
+    },
+    {
+      "id": 3938318279,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/imports.py",
+      "line": 14,
+      "excerpt": "_\ud83e\ude7a Stability & Availability_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win_\n\n<details>\n<summary>\ud83d\udd0e Supported by static analysis</summary>\n\n\ud83c\udfc1 Script executed:\n\n```shell\n#!/bin/bash\n"
+    },
+    {
+      "id": 3938318296,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/imports.py",
+      "line": 55,
+      "excerpt": "_\ud83d\uddc4\ufe0f Data Integrity & Integration_ | _\ud83d\udfe0 Major_ | _\ud83c\udfd7\ufe0f Heavy lift_\n\n**Persist validated claims and their line items.**\n\nThe normal path in `api/claimline/main.py` "
+    },
+    {
+      "id": 3938318297,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/imports.py",
+      "line": 60,
+      "excerpt": "_\ud83d\uddc4\ufe0f Data Integrity & Integration_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win_\n\n**Use a claim-scoped attachment key and retain its association.**\n\nAll rows write into one direct"
+    },
+    {
+      "id": 5547145895,
+      "user": "coderabbitai[bot]",
+      "path": null,
+      "line": null,
+      "excerpt": "<!-- This is an auto-generated comment: summarize by coderabbit.ai -->\n<!-- review_stack_entry_start -->\n\n[![Review Change Stack](https://storage.googleapis.com"
+    }
+  ],
+  "bot_comment_count": 14,
+  "evidence_pr": 4
+}

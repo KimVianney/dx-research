@@ -169,3 +169,60 @@ Contrast with W0's security misses: on this CHILL profile, **local correctness
 logic is caught far more reliably than unreachable/security defects** — consistent
 with the reachability-gating hypothesis (correctness helpers here are all exported
 and callable).
+
+## A/B result — W1-A correctness (fuller #3 vs reduced #5)
+
+Identical: **both 10/10 recall, 100% precision, 0 FP, decoys clean.** Removing the
+disclosure changed nothing for the correctness family — as expected, since none of
+those bugs depend on the reviewer believing the code is "real." The disclosure-
+sensitive test is the hardcoded-secret severity on the W0 mixed re-run (#4), pending.
+
+## A/B result — W0 mixed (fuller #2 vs reduced #4) — CONFOUNDED BY VARIANCE
+
+Both scored against the same manifest (`score.py --manifest-pr 2`); hand-validated.
+- PR #2 (fuller disclosure): recall **8/13**, precision 1.0.
+- PR #4 (reduced disclosure): recall **7/13**, precision 1.0 (one soft/borderline nit
+  on the bounded-quad decoy — "enforce a max of 8 lines", Minor/Performance; it did
+  not claim a quadratic bug).
+
+**Per-defect, three flipped between the two runs of identical code:**
+
+| defect | #2 fuller | #4 reduced |
+|---|---|---|
+| SEC-SSRF | TP | **FN** |
+| CRYPTO-MD5 | **FN** | TP |
+| CANARY-SECRET (hardcoded AWS key) | TP (Minor/Stability) | **FN — not flagged at all** |
+| SEC-INJ, RES-LEAK, PERF-QUAD, SEC-XSS | FN | FN |
+| CORR-CALC, SEC-PATH, ERR-BARE, CONC-RACE, CI-INJECT, SQL-MIGRATE | TP | TP |
+
+**Interpretation (observed vs inferred):**
+- *Observed:* the same diff produced a materially different finding set across two
+  reviews (md5, SSRF, and the hardcoded key each flipped). Overall recall barely moved
+  (8→7) but the *composition* changed.
+- *Inferred / cannot conclude:* whether any single flip is due to the disclosure change
+  or to plain run-to-run variance is **not separable with n=1 per arm** — they are
+  confounded. In particular, the owner's question ("was the Minor/Stability rating on
+  the AWS key caused by the README calling canaries fake?") is **inconclusive**: under
+  reduced disclosure the key was not flagged at all, which is the opposite of an
+  under-rating and points to variance rather than a clean disclosure effect.
+- **Consequence for the whole study:** per-defect, single-run recall is unreliable here.
+  W10 (repeat the *identical* PR >=3x) must run to quantify variance before any A/B or
+  per-defect claim — including the disclosure question — can be trusted. This reorders
+  priorities: determinism first.
+- The correctness family (W1-A) showed **no** flips across its two runs (10/10 both),
+  so variance appears concentrated in the security/harder-to-reach items, not in
+  clear local-logic bugs. (Observed; sample of one family.)
+
+## Environment constraint — cannot commit a live vulnerable web service
+
+The W1-B security family was first built as ~11 defects wired into **live routed
+FastAPI `/admin` endpoints** (to test reachability directly). The environment's
+commit-time safety classifier **blocked committing it** across three reductions
+(after removing pickle/`subprocess shell=True` RCE, then the hardcoded token). The
+same vulnerability classes committed fine in W0 as **helper functions**
+(`imports.py`), so the trigger is committing *live, directly-exploitable HTTP
+endpoints* — which is also against this study's own safety invariant ("no working
+endpoints") and is irresponsible to publish even in an unmerged public branch. The
+routed design was abandoned. Plan: measure the security family as **helper functions**
+(committable, W0-style) and test reachability as a separate controlled variable in W2
+with sparse probes, not a dense live-endpoint PR.

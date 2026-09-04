@@ -375,3 +375,4 @@ probes:
     description: "safe_ratio guards a zero denominator; flagging divide-by-zero is a FP."
     detect_any: ["divide by zero", "zerodivision", "division by zero"]
     kind: decoy
+
