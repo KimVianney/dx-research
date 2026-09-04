@@ -1,0 +1,22 @@
+# Ground truth for planted items. One entry per item.
+#
+# Schema per entry:
+#   id:                stable unique id, e.g. SEC-004
+#   wave:              wave number (0..11)
+#   repo:              claimline | claimline-edge
+#   pr:                PR number (filled when the PR opens; null until then)
+#   category:          family/subtype, e.g. security/injection
+#   severity_expected: informational | low | medium | high | critical
+#   file:              path within the lab repo
+#   line:              approx line of the planted item on the PR branch
+#   description:       what it is, in plain prose
+#   detect_any:        list of substrings; a tool comment on/near the item that
+#                      contains ANY of these counts as a detection
+#   kind:              defect | decoy | canary
+#
+# Families: correctness, security (injection/authz/crypto/ssrf/path-traversal/
+# deserialization), concurrency, resource-leak, api-contract, performance
+# (n-plus-one/quadratic/unbounded-memory), error-handling, test-quality,
+# docs-drift, dependency, iac-misconfig, ci-workflow, phi-handling, domain-logic.
+
+probes: []
