@@ -229,3 +229,149 @@ probes:
       decoy. Marked invalid and excluded from precision scoring.
     detect_any: ["o(n^2)", "quadratic", "nested loop", "performance", "optimize"]
     kind: invalid
+
+  # ==== W1-A correctness family (feat/claim-aggregation-reports, PR #3) ====
+  - id: W1C-AGING-GAP
+    wave: 1
+    repo: claimline
+    pr: 3
+    category: correctness/boundary
+    severity_expected: medium
+    file: api/claimline/reporting.py
+    line: 17
+    description: "aging_bucket: day 31 falls through (> 31 not >= 31), leaving a gap; 31 mis-buckets to 90+."
+    detect_any: ["off-by-one", "gap", "boundary", "31", "falls through", "excluded"]
+    kind: defect
+  - id: W1C-DATE-RANGE
+    wave: 1
+    repo: claimline
+    pr: 3
+    category: correctness/boundary
+    severity_expected: medium
+    file: api/claimline/reporting.py
+    line: 29
+    description: "daily_totals uses svc < end, excluding the end date though the range is documented [start, end]."
+    detect_any: ["inclusive", "exclusive", "end date", "off-by-one", "boundary", "<= end"]
+    kind: defect
+  - id: W1C-AVG-TRUNC
+    wave: 1
+    repo: claimline
+    pr: 3
+    category: correctness
+    severity_expected: low
+    file: api/claimline/reporting.py
+    line: 37
+    description: "average_paid uses integer floor division (loses cents) and has no guard for an empty list (ZeroDivisionError)."
+    detect_any: ["integer division", "truncat", "floor", "zerodivision", "divide by zero", "empty"]
+    kind: defect
+  - id: W1C-PCT-TRUNC
+    wave: 1
+    repo: claimline
+    pr: 3
+    category: correctness
+    severity_expected: low
+    file: api/claimline/reporting.py
+    line: 42
+    description: "member_responsibility_pct truncates via int() and divides by allowed_cents which may be 0."
+    detect_any: ["truncat", "integer", "zerodivision", "divide by zero", "round"]
+    kind: defect
+  - id: W1C-LATEFEE-SIGN
+    wave: 1
+    repo: claimline
+    pr: 3
+    category: correctness
+    severity_expected: high
+    file: api/claimline/reporting.py
+    line: 47
+    description: "apply_late_fee subtracts the fee from the balance; it should add it."
+    detect_any: ["sign", "subtract", "should add", "increase", "minus", "wrong operator"]
+    kind: defect
+  - id: W1C-TIMELY-BOUND
+    wave: 1
+    repo: claimline
+    pr: 3
+    category: correctness/boundary
+    severity_expected: medium
+    file: api/claimline/reporting.py
+    line: 52
+    description: "is_timely uses < limit_days, so a claim filed exactly on the limit day is wrongly untimely (should be <=)."
+    detect_any: ["off-by-one", "boundary", "<=", "inclusive", "exactly", "equal"]
+    kind: defect
+  - id: W1C-MUT-DEFAULT
+    wave: 1
+    repo: claimline
+    pr: 3
+    category: correctness/foot-gun
+    severity_expected: medium
+    file: api/claimline/reporting.py
+    line: 55
+    description: "merge_adjustments has a mutable dict default and mutates base in place."
+    detect_any: ["mutable default", "default argument", "b006", "shared", "mutates"]
+    kind: defect
+  - id: W1C-TOP-ORDER
+    wave: 1
+    repo: claimline
+    pr: 3
+    category: correctness
+    severity_expected: high
+    file: api/claimline/reporting.py
+    line: 64
+    description: "top_payers sorts ascending (no reverse), returning the lowest n rather than the highest."
+    detect_any: ["reverse", "descending", "ascending", "highest", "lowest", "sort order"]
+    kind: defect
+  - id: W1C-ROUND-TRUNC
+    wave: 1
+    repo: claimline
+    pr: 3
+    category: correctness
+    severity_expected: medium
+    file: api/claimline/reporting.py
+    line: 70
+    description: "round_to_dollar truncates via int() instead of rounding to nearest dollar."
+    detect_any: ["truncat", "round", "nearest", "floor"]
+    kind: defect
+  - id: W1C-BALANCE-ACC
+    wave: 1
+    repo: claimline
+    pr: 3
+    category: correctness
+    severity_expected: high
+    file: api/claimline/reporting.py
+    line: 78
+    description: "running_balance overwrites balance each iteration instead of accumulating (should be +=)."
+    detect_any: ["accumulat", "running", "+=", "overwrit", "reset", "each iteration"]
+    kind: defect
+  # ---- decoys (correct despite looking suspicious) ----
+  - id: W1C-DECOY-HALFUP
+    wave: 1
+    repo: claimline
+    pr: 3
+    category: correctness
+    severity_expected: informational
+    file: api/claimline/reporting.py
+    line: 85
+    description: "half_up_round uses Decimal ROUND_HALF_UP correctly; flagging float-precision here is a FP."
+    detect_any: ["float", "precision", "rounding error", "inaccurate"]
+    kind: decoy
+  - id: W1C-DECOY-INCLUSIVE
+    wave: 1
+    repo: claimline
+    pr: 3
+    category: correctness/boundary
+    severity_expected: informational
+    file: api/claimline/reporting.py
+    line: 92
+    description: "inclusive_day_count's +1 is intentional and documented; flagging off-by-one is a FP."
+    detect_any: ["off-by-one", "incorrect", "should not add", "boundary error"]
+    kind: decoy
+  - id: W1C-DECOY-SAFERATIO
+    wave: 1
+    repo: claimline
+    pr: 3
+    category: correctness
+    severity_expected: informational
+    file: api/claimline/reporting.py
+    line: 98
+    description: "safe_ratio guards a zero denominator; flagging divide-by-zero is a FP."
+    detect_any: ["divide by zero", "zerodivision", "division by zero"]
+    kind: decoy
