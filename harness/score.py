@@ -66,22 +66,25 @@ def _comments(snap: dict) -> list[dict]:
     return out
 
 
-def _matches(entry: dict, c: dict, window: int) -> bool:
+def _matches(entry: dict, c: dict, window: int, decoy: bool = False) -> bool:
+    """A comment matches an entry only if it contains one of the entry's
+    detect_any keywords AND is either anchored near the entry's line or names the
+    entry's file. Keyword is always required (pure line-proximity is unreliable
+    when several defects cluster in one file). Decoys match only when anchored.
+    """
     body = c["body"].lower()
     needles = [n.lower() for n in entry.get("detect_any", [])]
-    base = os.path.basename(entry["file"])
-    # (a) anchored to same file within window
-    if c["path"] and c["path"] == entry["file"] and c["line"] is not None:
-        if entry.get("line") is None or abs(int(c["line"]) - int(entry["line"])) <= window:
-            if not needles or any(n in body for n in needles):
-                return True
-            # anchored exactly on the line counts even without keyword
-            if entry.get("line") is not None and abs(int(c["line"]) - int(entry["line"])) <= window:
-                return True
-    # (b) body mentions the file and a detect keyword
-    if base in body and needles and any(n in body for n in needles):
-        return True
-    return False
+    if not needles or not any(n in body for n in needles):
+        return False
+    anchored = (
+        c["path"] == entry["file"]
+        and c["line"] is not None
+        and (entry.get("line") is None
+             or abs(int(c["line"]) - int(entry["line"])) <= window)
+    )
+    if decoy:
+        return anchored
+    return anchored or os.path.basename(entry["file"]) in body
 
 
 def score(manifest: list[dict], snap: dict, repo: str, pr: int, window: int) -> dict:
@@ -94,12 +97,18 @@ def score(manifest: list[dict], snap: dict, repo: str, pr: int, window: int) -> 
     results = []
     for e in entries:
         cat = e.get("category", "uncategorized")
+        kind = e.get("kind", "defect")
+        if kind not in ("defect", "canary", "decoy"):
+            # 'bonus' (real, unplanted) and 'invalid' (contaminated) are recorded
+            # but never scored for recall/precision.
+            results.append({"id": e["id"], "kind": kind, "category": cat,
+                            "outcome": "not-scored", "matched_comment_id": None})
+            continue
         hit = None
         for c in bot_comments:
-            if _matches(e, c, window):
+            if _matches(e, c, window, decoy=(kind == "decoy")):
                 hit = c
                 break
-        kind = e.get("kind", "defect")
         if kind == "decoy":
             if hit:
                 per_cat[cat]["fp"] += 1

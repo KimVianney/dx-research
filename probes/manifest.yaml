@@ -110,7 +110,7 @@ probes:
     file: api/claimline/batch.py
     line: 13
     description: O(n^2) dedup by nested scan over an unbounded claim list.
-    detect_any: ["o(n^2)", "quadratic", "nested loop", "set", "dictionary", "inefficient"]
+    detect_any: ["o(n^2)", "o(n2)", "quadratic", "nested loop", "inefficient"]
     kind: defect
   - id: W0-CANARY-SECRET
     wave: 0
@@ -154,8 +154,52 @@ probes:
     file: .github/workflows/pr-attachments.yml
     line: 16
     description: PR title interpolated into a run shell command (expression/script injection).
-    detect_any: ["script injection", "expression injection", "untrusted", "github.event", "env:"]
+    detect_any: ["script injection", "expression injection", "injection", "untrusted", "github.event"]
     kind: defect
+  - id: W0-SQL-MIGRATE
+    wave: 0
+    repo: claimline
+    pr: 2
+    category: database/migration-safety
+    severity_expected: high
+    file: migrations/0002_add_claim_priority.sql
+    line: 5
+    description: >
+      ADD COLUMN ... NOT NULL without a default on a populated table (fails / full
+      table rewrite + lock). Intended defect; was omitted from the first manifest
+      draft and added after hand-validation.
+    detect_any: ["not null", "default", "lock", "rewrite", "backfill", "table rewrite"]
+    kind: defect
+  # ---- bonus: real, correct findings CodeRabbit made that were NOT planted ----
+  # kind 'bonus' is not scored (recall is measured only against intended defects);
+  # recorded for honesty and to credit real value found.
+  - id: W0-BONUS-UNITS
+    wave: 0
+    repo: claimline
+    pr: 2
+    category: correctness/domain-logic
+    severity_expected: medium
+    file: api/claimline/batch.py
+    line: 38
+    description: >
+      line_pairs_over_limit compares per-unit charges without multiplying by units,
+      inconsistent with Claim.total_charge_cents. A real bug that happened to live in
+      the code intended as the bounded-quadratic decoy.
+    detect_any: ["units", "charge"]
+    kind: bonus
+  - id: W0-BONUS-DEP
+    wave: 0
+    repo: claimline
+    pr: 2
+    category: dependency/supply-chain
+    severity_expected: medium
+    file: api/claimline/imports.py
+    line: 14
+    description: >
+      requests imported but not declared in api/pyproject.toml. Real, unplanted;
+      CodeRabbit verified it by executing shell/rg scripts (agentic verification).
+    detect_any: ["requests", "dependency", "pyproject"]
+    kind: bonus
   # ---- decoys (flagging these = false positive) ----
   - id: W0-DECOY-EXCEPT
     wave: 0
@@ -179,7 +223,9 @@ probes:
     file: api/claimline/batch.py
     line: 37
     description: >
-      line_pairs_over_limit is O(n^2) but documented as hard-bounded (<=8 lines);
-      correct as written. Flagging as a perf issue is a FP.
+      INTENDED as a decoy: O(n^2) but hard-bounded (<=8 lines), so flagging the perf
+      aspect would be a FP. RESULT: the perf aspect was NOT flagged (good), but the
+      code contained an unintended real bug (see W0-BONUS-UNITS), so it is not a clean
+      decoy. Marked invalid and excluded from precision scoring.
     detect_any: ["o(n^2)", "quadratic", "nested loop", "performance", "optimize"]
-    kind: decoy
+    kind: invalid
