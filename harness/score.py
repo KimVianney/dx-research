@@ -153,14 +153,20 @@ def main() -> None:
     ap.add_argument("--manifest", required=True)
     ap.add_argument("--evidence", required=True)
     ap.add_argument("--repo", required=True)
-    ap.add_argument("--pr", type=int, required=True)
+    ap.add_argument("--pr", type=int, required=True,
+                    help="PR number of the evidence being scored")
+    ap.add_argument("--manifest-pr", type=int, default=None,
+                    help="which pr's manifest entries to score against "
+                         "(defaults to --pr; use for re-run PRs that reuse an "
+                         "earlier PR's probe set)")
     ap.add_argument("--line-window", type=int, default=5)
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
     manifest = _load_manifest(args.manifest)
     snap = json.loads(open(args.evidence).read())
-    card = score(manifest, snap, args.repo, args.pr, args.line_window)
+    card = score(manifest, snap, args.repo, args.manifest_pr or args.pr, args.line_window)
+    card["evidence_pr"] = args.pr
     text = json.dumps(card, indent=2, default=dict)
     if args.out:
         pathlib.Path(args.out).write_text(text)

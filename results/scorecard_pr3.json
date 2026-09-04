@@ -1,0 +1,166 @@
+{
+  "repo": "claimline",
+  "pr": 3,
+  "totals": {
+    "tp": 10,
+    "fn": 0,
+    "fp": 0,
+    "recall": 1.0,
+    "precision": 1.0
+  },
+  "per_category": {
+    "correctness/boundary": {
+      "tp": 3,
+      "fn": 0,
+      "fp": 0
+    },
+    "correctness": {
+      "tp": 6,
+      "fn": 0,
+      "fp": 0
+    },
+    "correctness/foot-gun": {
+      "tp": 1,
+      "fn": 0,
+      "fp": 0
+    }
+  },
+  "entries": [
+    {
+      "id": "W1C-AGING-GAP",
+      "kind": "defect",
+      "category": "correctness/boundary",
+      "outcome": "TP",
+      "matched_comment_id": 3937327884
+    },
+    {
+      "id": "W1C-DATE-RANGE",
+      "kind": "defect",
+      "category": "correctness/boundary",
+      "outcome": "TP",
+      "matched_comment_id": 3937327890
+    },
+    {
+      "id": "W1C-AVG-TRUNC",
+      "kind": "defect",
+      "category": "correctness",
+      "outcome": "TP",
+      "matched_comment_id": 3937327895
+    },
+    {
+      "id": "W1C-PCT-TRUNC",
+      "kind": "defect",
+      "category": "correctness",
+      "outcome": "TP",
+      "matched_comment_id": 3937327895
+    },
+    {
+      "id": "W1C-LATEFEE-SIGN",
+      "kind": "defect",
+      "category": "correctness",
+      "outcome": "TP",
+      "matched_comment_id": 3937327900
+    },
+    {
+      "id": "W1C-TIMELY-BOUND",
+      "kind": "defect",
+      "category": "correctness/boundary",
+      "outcome": "TP",
+      "matched_comment_id": 3937327890
+    },
+    {
+      "id": "W1C-MUT-DEFAULT",
+      "kind": "defect",
+      "category": "correctness/foot-gun",
+      "outcome": "TP",
+      "matched_comment_id": 3937327910
+    },
+    {
+      "id": "W1C-TOP-ORDER",
+      "kind": "defect",
+      "category": "correctness",
+      "outcome": "TP",
+      "matched_comment_id": 3937327914
+    },
+    {
+      "id": "W1C-ROUND-TRUNC",
+      "kind": "defect",
+      "category": "correctness",
+      "outcome": "TP",
+      "matched_comment_id": 3937327895
+    },
+    {
+      "id": "W1C-BALANCE-ACC",
+      "kind": "defect",
+      "category": "correctness",
+      "outcome": "TP",
+      "matched_comment_id": 3937327884
+    },
+    {
+      "id": "W1C-DECOY-HALFUP",
+      "kind": "decoy",
+      "category": "correctness",
+      "outcome": "OK (decoy not flagged)",
+      "matched_comment_id": null
+    },
+    {
+      "id": "W1C-DECOY-INCLUSIVE",
+      "kind": "decoy",
+      "category": "correctness/boundary",
+      "outcome": "OK (decoy not flagged)",
+      "matched_comment_id": null
+    },
+    {
+      "id": "W1C-DECOY-SAFERATIO",
+      "kind": "decoy",
+      "category": "correctness",
+      "outcome": "OK (decoy not flagged)",
+      "matched_comment_id": null
+    }
+  ],
+  "unmatched_bot_comments": [
+    {
+      "id": 3937327898,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/reporting.py",
+      "line": 42,
+      "excerpt": "_\ud83e\ude7a Stability & Availability_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win_\n\n**Handle `allowed_cents == 0`.**\n\nA zero allowed amount raises `ZeroDivisionError`. Denied or non-cove"
+    },
+    {
+      "id": 3937327908,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/reporting.py",
+      "line": 52,
+      "excerpt": "_\ud83c\udfaf Functional Correctness_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win_\n\n**Include the filing deadline day.**\n\nA claim received exactly `limit_days` after service returns `False"
+    },
+    {
+      "id": 3937327918,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/reporting.py",
+      "line": 70,
+      "excerpt": "_\ud83c\udfaf Functional Correctness_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win_\n\n**Round to the nearest dollar.**\n\nThis truncates instead of rounding. For example, `150` and `199` both "
+    },
+    {
+      "id": 3937327923,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/reporting.py",
+      "line": 77,
+      "excerpt": "_\ud83d\uddc4\ufe0f Data Integrity & Integration_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win_\n\n**Require complete charge-payment pairs.**\n\nRuff B905 fails CI at this line. These lists represen"
+    },
+    {
+      "id": 3937327928,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/reporting.py",
+      "line": 78,
+      "excerpt": "_\ud83c\udfaf Functional Correctness_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win_\n\n**Accumulate the prior balance.**\n\nThis assignment discards every prior event. For charges `[100, 50]` a"
+    },
+    {
+      "id": 5545501191,
+      "user": "coderabbitai[bot]",
+      "path": null,
+      "line": null,
+      "excerpt": "<!-- This is an auto-generated comment: summarize by coderabbit.ai -->\n<!-- review_stack_entry_start -->\n\n[![Review Change Stack](https://storage.googleapis.com"
+    }
+  ],
+  "bot_comment_count": 12
+}
