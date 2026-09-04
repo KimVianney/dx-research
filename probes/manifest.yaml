@@ -626,3 +626,128 @@ probes:
     description: "BufferedFanIn sizes the channel to the sender count (no leak); flagging a leak is a FP."
     detect_any: ["goroutine leak", "leak", "unbuffered", "blocks"]
     kind: decoy
+
+  # ==== W1-D performance family (feat/claim-analytics, PR #10) ====
+  # ruff-clean: no deterministic catches (PERF rules not enabled) -> LLM-only territory.
+  - id: W1P-NPLUS1
+    wave: 1
+    repo: claimline
+    pr: 10
+    category: performance/n-plus-one
+    severity_expected: high
+    file: api/claimline/analytics.py
+    line: 15
+    description: "totals_by_member issues one fetch_claims call per member (N+1)."
+    detect_any: ["n+1", "n plus one", "per member", "batch", "single query", "one query per"]
+    kind: defect
+  - id: W1P-UNBOUNDED
+    wave: 1
+    repo: claimline
+    pr: 10
+    category: performance/unbounded-memory
+    severity_expected: medium
+    file: api/claimline/analytics.py
+    line: 22
+    description: "load_all_lines reads the whole file into memory (unbounded); also no context manager."
+    detect_any: ["unbounded", "whole file", "into memory", "stream", "memory", "context manager"]
+    kind: defect
+  - id: W1P-RECOMPUTE
+    wave: 1
+    repo: claimline
+    pr: 10
+    category: performance/quadratic
+    severity_expected: high
+    file: api/claimline/analytics.py
+    line: 29
+    description: "running_share recomputes the grand total inside the loop (O(n^2))."
+    detect_any: ["o(n^2)", "quadratic", "recompute", "hoist", "outside the loop", "each iteration"]
+    kind: defect
+  - id: W1P-STRCONCAT
+    wave: 1
+    repo: claimline
+    pr: 10
+    category: performance
+    severity_expected: low
+    file: api/claimline/analytics.py
+    line: 38
+    description: "build_csv concatenates strings with += in a loop (quadratic string building)."
+    detect_any: ["string concat", "join", "+=", "quadratic", "stringbuilder", "io.stringio"]
+    kind: defect
+  - id: W1P-SORTLOOP
+    wave: 1
+    repo: claimline
+    pr: 10
+    category: performance/quadratic
+    severity_expected: high
+    file: api/claimline/analytics.py
+    line: 46
+    description: "rank_within_groups re-sorts (and re-flattens) all amounts inside the per-group loop."
+    detect_any: ["sort", "inside the loop", "recompute", "hoist", "outside the loop", "o(n"]
+    kind: defect
+  - id: W1P-LISTMEMBER
+    wave: 1
+    repo: claimline
+    pr: 10
+    category: performance
+    severity_expected: medium
+    file: api/claimline/analytics.py
+    line: 53
+    description: "filter_active does membership tests against a list (O(n*m); should use a set)."
+    detect_any: ["set", "membership", "o(n", "list lookup", "hash", "dictionary"]
+    kind: defect
+  - id: W1P-REGEXLOOP
+    wave: 1
+    repo: claimline
+    pr: 10
+    category: performance
+    severity_expected: low
+    file: api/claimline/analytics.py
+    line: 60
+    description: "match_procedure_codes compiles the regex inside the loop each iteration."
+    detect_any: ["compile", "precompile", "outside the loop", "re.compile", "hoist", "module level"]
+    kind: defect
+  - id: W1P-LOADFILTER
+    wave: 1
+    repo: claimline
+    pr: 10
+    category: performance
+    severity_expected: medium
+    file: api/claimline/analytics.py
+    line: 68
+    description: "claims_with_status selects all rows then filters status in Python (should be a WHERE)."
+    detect_any: ["where", "filter in the database", "in python", "sql", "predicate", "push down"]
+    kind: defect
+  # decoys (efficient; flagging as perf issues = FP)
+  - id: W1P-DECOY-STREAM
+    wave: 1
+    repo: claimline
+    pr: 10
+    category: performance/unbounded-memory
+    severity_expected: informational
+    file: api/claimline/analytics.py
+    line: 77
+    description: "stream_lines is a streaming generator; flagging unbounded memory is a FP."
+    detect_any: ["unbounded", "into memory", "load all", "memory"]
+    kind: decoy
+  - id: W1P-DECOY-SET
+    wave: 1
+    repo: claimline
+    pr: 10
+    category: performance
+    severity_expected: informational
+    file: api/claimline/analytics.py
+    line: 86
+    description: "filter_active_fast already uses a set; flagging O(n) membership is a FP."
+    detect_any: ["set", "o(n", "membership", "list lookup"]
+    kind: decoy
+  - id: W1P-DECOY-HOIST
+    wave: 1
+    repo: claimline
+    pr: 10
+    category: performance/quadratic
+    severity_expected: informational
+    file: api/claimline/analytics.py
+    line: 91
+    description: "shares_precomputed hoists the grand total; flagging recompute is a FP."
+    detect_any: ["recompute", "inside the loop", "each iteration", "quadratic"]
+    kind: decoy
