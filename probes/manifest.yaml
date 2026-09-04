@@ -376,3 +376,139 @@ probes:
     detect_any: ["divide by zero", "zerodivision", "division by zero"]
     kind: decoy
 
+
+  # ==== W1-B security family, HELPER-FUNCTION form (feat/claim-document-helpers, PR #8) ====
+  # Committable form (plain helpers, no live endpoints); reachability tested separately in W2.
+  - id: W1SH-SQLI
+    wave: 1
+    repo: claimline
+    pr: 8
+    category: security/injection
+    severity_expected: critical
+    file: api/claimline/documents.py
+    line: 24
+    description: "find_documents_sql f-string-interpolates member_id into SQL."
+    detect_any: ["sql inject", "parameteri", "bind", "string-based query", "f-string"]
+    kind: defect
+  - id: W1SH-SSRF
+    wave: 1
+    repo: claimline
+    pr: 8
+    category: security/ssrf
+    severity_expected: high
+    file: api/claimline/documents.py
+    line: 35
+    description: "fetch_external_document urlopens a caller-supplied url with no validation (SSRF)."
+    detect_any: ["ssrf", "server-side request", "validate the url", "url validation", "unvalidated"]
+    kind: defect
+  - id: W1SH-TIMEOUT
+    wave: 1
+    repo: claimline
+    pr: 8
+    category: resource-leak
+    severity_expected: medium
+    file: api/claimline/documents.py
+    line: 40
+    description: "poll_conversion_status urlopen has no timeout (can hang / DoS)."
+    detect_any: ["timeout", "hang", "block indefinitely", "denial of service"]
+    kind: defect
+  - id: W1SH-PATH
+    wave: 1
+    repo: claimline
+    pr: 8
+    category: security/path-traversal
+    severity_expected: high
+    file: api/claimline/documents.py
+    line: 45
+    description: "save_document os.path.join(DOCS_ROOT, name) with unsanitized name (traversal)."
+    detect_any: ["path travers", "directory travers", "sanitiz", "../", "arbitrary file"]
+    kind: defect
+  - id: W1SH-MD5
+    wave: 1
+    repo: claimline
+    pr: 8
+    category: security/crypto
+    severity_expected: medium
+    file: api/claimline/documents.py
+    line: 53
+    description: "document_token derived from md5 (weak, also predictable share token)."
+    detect_any: ["md5", "insecure hash", "weak hash", "sha-256", "sha256"]
+    kind: defect
+  - id: W1SH-RANDOM
+    wave: 1
+    repo: claimline
+    pr: 8
+    category: security/crypto
+    severity_expected: high
+    file: api/claimline/documents.py
+    line: 63
+    description: "new_share_id uses random.choice (non-cryptographic) for an unguessable id."
+    detect_any: ["random", "cryptograph", "secrets module", "predictable", "insecure random"]
+    kind: defect
+  - id: W1SH-IDOR
+    wave: 1
+    repo: claimline
+    pr: 8
+    category: security/authz
+    severity_expected: high
+    file: api/claimline/documents.py
+    line: 66
+    description: "get_claim_for_user ignores user_id (no ownership check; IDOR/BOLA)."
+    detect_any: ["authorization", "authz", "idor", "access control", "ownership", "unused", "bola"]
+    kind: defect
+  - id: W1SH-XSS
+    wave: 1
+    repo: claimline
+    pr: 8
+    category: security/xss
+    severity_expected: high
+    file: api/claimline/documents.py
+    line: 73
+    description: "render_note interpolates user text into HTML without escaping (XSS)."
+    detect_any: ["xss", "cross-site", "escap", "sanitiz", "html injection"]
+    kind: defect
+  - id: W1SH-LOG
+    wave: 1
+    repo: claimline
+    pr: 8
+    category: phi-handling
+    severity_expected: medium
+    file: api/claimline/documents.py
+    line: 83
+    description: "log_access logs a full member record and a token at info (sensitive data / PHI in logs)."
+    detect_any: ["log", "sensitive", "pii", "phi", "redact", "token in log"]
+    kind: defect
+  # decoys
+  - id: W1SH-DECOY-PARAM
+    wave: 1
+    repo: claimline
+    pr: 8
+    category: security/injection
+    severity_expected: informational
+    file: api/claimline/documents.py
+    line: 29
+    description: "find_documents_safe uses a bound ? parameter; flagging SQLi is a FP."
+    detect_any: ["sql inject", "injection", "not parameterized", "unsafe query"]
+    kind: decoy
+  - id: W1SH-DECOY-SHA256
+    wave: 1
+    repo: claimline
+    pr: 8
+    category: security/crypto
+    severity_expected: informational
+    file: api/claimline/documents.py
+    line: 58
+    description: "content_digest uses sha256 for a non-secret integrity digest; flagging weak-crypto is a FP."
+    detect_any: ["weak hash", "insecure hash", "md5", "broken crypto"]
+    kind: decoy
+  - id: W1SH-DECOY-ESCAPE
+    wave: 1
+    repo: claimline
+    pr: 8
+    category: security/xss
+    severity_expected: informational
+    file: api/claimline/documents.py
+    line: 78
+    description: "render_note_safe html.escapes the text; flagging XSS is a FP."
+    detect_any: ["xss", "cross-site", "not escaped", "html injection"]
+    kind: decoy
