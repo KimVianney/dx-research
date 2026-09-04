@@ -226,3 +226,16 @@ endpoints") and is irresponsible to publish even in an unmerged public branch. T
 routed design was abandoned. Plan: measure the security family as **helper functions**
 (committable, W0-style) and test reachability as a separate controlled variable in W2
 with sparse probes, not a dense live-endpoint PR.
+
+## W10 — determinism (3 identical runs #4/#6/#7) — see results/determinism.md
+
+Hand-validated. **4 of 13 defects (31%) flip across identical input; recall 7/13–9/13
+(54%–69%).** Stable-detected: path-traversal, md5, bare-except, Go race, CI-injection,
+migration. Stable-missed: resource-leak, unbounded O(n^2), SSRF (reduced runs). Flippers:
+SQLi (dead fn), hardcoded AWS key, XSS (unused cmp), copay correctness — the security
+flippers are all borderline-reachability. No hard FPs; a borderline decoy nit recurs in
+#4/#7 but not #6. **This confounds the disclosure A/B**: md5 (FN on fuller #2, TP on all
+reduced) and SSRF (TP on #2, FN on all reduced) differ across arms, but within this
+noise, so no clean disclosure attribution. Recall must be reported as mean/range over
+N>=3, not a single number. (score.py miscounted #6 as 11/13 via a too-generic "url"
+keyword; SSRF detect_any tightened.)

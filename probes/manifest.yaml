@@ -66,7 +66,7 @@ probes:
     file: api/claimline/imports.py
     line: 32
     description: requests.get on an attacker-controlled attachment_url without validation.
-    detect_any: ["ssrf", "server-side request", "validate the url", "internal", "url"]
+    detect_any: ["ssrf", "server-side request", "validate the url", "unvalidated url", "url validation"]
     kind: defect
   - id: W0-CRYPTO-MD5
     wave: 0
