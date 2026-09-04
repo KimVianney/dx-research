@@ -1,60 +1,41 @@
 # STATUS — transparent build & benchmark
 
-_Last updated: 2026-09-04 (session session_019FtoBbsrGyBxSLTdgLe7tR)_
+_Last updated: 2026-09-04 ~19:11Z (session session_019FtoBbsrGyBxSLTdgLe7tR)_
 
 ## Mode
+Transparent variant (labs openly disclose they are testbeds; no deception of the
+tool; no injection/subversion testing). Deliberately-vulnerable diffs live only in
+un-merged PRs; `main` stays clean and green.
 
-Running the **transparent** variant agreed with the owner:
-- Labs are honestly labeled as an intentional testbed (disclosure up front in
-  `claimline/SECURITY.md`), no vocabulary-scrubbing or deception of the review tool.
-- No prompt-injection / bidi-homoglyph subversion attacks (original Wave 7 dropped).
-- Deliberately-vulnerable diffs live only in **PRs that are not merged**; `main`
-  stays clean and green.
-- Caveat to record in findings: because the repo openly discloses it is a testbed,
-  numbers reflect CodeRabbit reviewing a repo it *can* tell is a testbed.
+## Access
+- RESOLVED: owner granted the Claude GitHub App write access. `claimline`,
+  `claimline-edge`, `dx-research` all attached and pushable.
+- Note: `git push` works now; earlier read-only 403s are gone.
 
 ## Done
+- **claimline baseline** on `main`, CI green (run #1 success). Bundle also sent to owner.
+- **dx-research scaffold** pushed: harness (collector/fingerprint/score), manifest schema,
+  README/FINDINGS/STATUS.
+- **W0 PR#1** (trivial docs): CodeRabbit fired unprompted in ~50s, "no actionable
+  comments", single edited issue comment, empty reviews API. Fingerprint recorded.
+- **W0 PR#2** (`feat/claim-batch-import`, PR #2): 12 defects + 2 decoys planted &
+  manifested; PR open; **review in progress** at time of writing. Local ruff catches
+  4/12 deterministically.
 
-- **claimline baseline built and verified green locally** (committed on `main`,
-  commit `10c8612` in the local clone / bundle):
-  - `api/` Python 3.12 FastAPI + adjudication engine — ruff clean, 13 pytest pass.
-  - `worker/` Go settlement worker — gofmt clean, go vet clean, go test pass.
-  - `web/` TS/React console — tsc clean, eslint clean, 4 vitest pass.
-  - `migrations/`, `openapi/`, `infra/` (Dockerfile + Terraform), `.github/workflows/ci.yml`.
-  - `README.md` + `SECURITY.md` with the transparency disclosure.
+## In flight
+- Waiting on PR #2 review to complete (subscribed; fallback check scheduled 19:17Z).
+  Next: collect -> score -> hand-validate matches -> write W0 PR#2 findings + first
+  recall/precision read -> push.
 
-## BLOCKED (owner action required)
+## Next
+- Validate score.py against the real PR#2 comments (hand-label them) before trusting numbers.
+- W1 detection matrix (8 family PRs). Then W2-W4, W10; W11 in claimline-edge.
+- Probe PRs will be **closed without merging** to keep `main` clean.
 
-1. **All GitHub writes to `claimline` are 403 (read-only integration).**
-   - git push → `403 Claude doesn't have GitHub access ... for your organization`
-   - MCP `create_or_update_file`/`push_files` → `403 Resource not accessible by integration`
-   - direct curl writes → proxy-blocked
-   - Reads succeed (get_me, list_branches), so the App is installed but **read-only**.
-   - Likely cause: the App installation returned to read-only / pending approval when
-     repo access was reconfigured to add the new repos.
-   - **Fix:** grant the Claude GitHub App **write (contents), workflows, and
-     pull-requests** permissions and include `claimline`, `claimline-edge`, and
-     `dx-research`. Then a **fresh session** is probably needed so the git-proxy
-     re-binds. Baseline is preserved as `claimline-baseline.bundle` (sent to owner)
-     and committed in this container.
-
-2. **`dx-research` and `claimline-edge` not visible to the session.**
-   - Owner created them, but they do not appear in the session's repo listing and
-     `add_repo` returns "no access" — the App installation hasn't been granted access
-     to them either. Same fix as (1).
-
-## Next (once write access is restored)
-
-1. Push claimline baseline `main`; confirm CI green.
-2. Push this `dx-research` scaffold (harness + manifest) once its repo is attached.
-3. W0 fingerprint PR (trivial 1-line, then ~200-LOC mixed-defect PR), capture
-   CodeRabbit anatomy/latency/login/check-run.
-4. W1 detection matrix (8 family PRs), score recall/precision.
-5. Continue W2–W4, W10; W11 in claimline-edge. Pace later waves via send_later.
-
-## Notes
-
-- Account also has access to a `ReveloopRCM` org of real healthcare repos — strictly
-  out of scope; untouched.
-- Harness/manifest are being built locally under `/home/user/dx-research` pending the
-  repo becoming pushable.
+## Environment quirks observed
+- Commit-time secret guard blocks committing a literal AWS secret key; used the
+  access-key-id canary alone for the hardcoded-credential probe.
+- `claimline` git-over-HTTPS push works; direct-curl API writes are proxy-blocked
+  (writes must go via MCP tools or git). Repo creation via API is blocked (owner must
+  create repos manually).
+- Out of scope and untouched: the `ReveloopRCM` org of real healthcare repos.
