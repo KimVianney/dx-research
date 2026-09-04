@@ -512,3 +512,117 @@ probes:
     description: "render_note_safe html.escapes the text; flagging XSS is a FP."
     detect_any: ["xss", "cross-site", "not escaped", "html injection"]
     kind: decoy
+
+  # ==== W1-C concurrency family (feat/worker-concurrent-aggregation, PR #9) ====
+  # Go worker helpers; go vet is clean, go test -race would catch the data races.
+  - id: W1CC-ADD-IN-GO
+    wave: 1
+    repo: claimline
+    pr: 9
+    category: concurrency
+    severity_expected: high
+    file: worker/concurrent.go
+    line: 15
+    description: "wg.Add(1) called inside the goroutine; Wait can return before goroutines register."
+    detect_any: ["waitgroup", "wg.add", "add before", "race", "before starting", "outside the goroutine"]
+    kind: defect
+  - id: W1CC-MAP-RACE
+    wave: 1
+    repo: claimline
+    pr: 9
+    category: concurrency
+    severity_expected: high
+    file: worker/concurrent.go
+    line: 18
+    description: "concurrent writes to the shared totals map without a mutex (data race / concurrent map write)."
+    detect_any: ["race", "concurrent map", "mutex", "lock", "data race", "synchroniz"]
+    kind: defect
+  - id: W1CC-COUNTER-RACE
+    wave: 1
+    repo: claimline
+    pr: 9
+    category: concurrency
+    severity_expected: high
+    file: worker/concurrent.go
+    line: 45
+    description: "Counter.Bump increments a shared int64 from goroutines without atomic/mutex (data race)."
+    detect_any: ["race", "atomic", "mutex", "data race", "synchroniz", "counter"]
+    kind: defect
+  - id: W1CC-GOLEAK
+    wave: 1
+    repo: claimline
+    pr: 9
+    category: concurrency
+    severity_expected: medium
+    file: worker/concurrent.go
+    line: 58
+    description: "NotifyFirst leaks a goroutine: unbuffered send blocks forever after the single receive."
+    detect_any: ["goroutine leak", "leak", "blocks forever", "unbuffered", "deadlock", "never receiv"]
+    kind: defect
+  - id: W1CC-APPEND-RACE
+    wave: 1
+    repo: claimline
+    pr: 9
+    category: concurrency
+    severity_expected: high
+    file: worker/concurrent.go
+    line: 73
+    description: "concurrent append to a shared slice from goroutines (data race)."
+    detect_any: ["race", "append", "shared slice", "data race", "mutex", "synchroniz"]
+    kind: defect
+  - id: W1CC-UNLOCK
+    wave: 1
+    repo: claimline
+    pr: 9
+    category: concurrency
+    severity_expected: high
+    file: worker/concurrent.go
+    line: 91
+    description: "SafeStore.Add returns early with the mutex still locked (no defer Unlock) -> deadlock."
+    detect_any: ["unlock", "defer", "lock held", "deadlock", "early return"]
+    kind: defect
+  - id: W1CC-TICK-LEAK
+    wave: 1
+    repo: claimline
+    pr: 9
+    category: resource-leak
+    severity_expected: medium
+    file: worker/concurrent.go
+    line: 103
+    description: "time.Tick inside a select loop creates a new leaking ticker each iteration."
+    detect_any: ["time.tick", "ticker", "leak", "time.newticker", "stop()"]
+    kind: defect
+  # decoys (correct concurrency)
+  - id: W1CC-DECOY-MUTEX
+    wave: 1
+    repo: claimline
+    pr: 9
+    category: concurrency
+    severity_expected: informational
+    file: worker/concurrent.go
+    line: 126
+    description: "SafeAggregate is correctly mutex-guarded; flagging a race here is a FP."
+    detect_any: ["race", "not synchronized", "unguarded", "data race"]
+    kind: decoy
+  - id: W1CC-DECOY-ONCE
+    wave: 1
+    repo: claimline
+    pr: 9
+    category: concurrency
+    severity_expected: informational
+    file: worker/concurrent.go
+    line: 142
+    description: "Config uses sync.Once correctly; flagging a race here is a FP."
+    detect_any: ["race", "not synchronized", "double init", "data race"]
+    kind: decoy
+  - id: W1CC-DECOY-BUFCHAN
+    wave: 1
+    repo: claimline
+    pr: 9
+    category: concurrency
+    severity_expected: informational
+    file: worker/concurrent.go
+    line: 150
+    description: "BufferedFanIn sizes the channel to the sender count (no leak); flagging a leak is a FP."
+    detect_any: ["goroutine leak", "leak", "unbuffered", "blocks"]
+    kind: decoy
