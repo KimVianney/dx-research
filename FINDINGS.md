@@ -239,3 +239,22 @@ reduced) and SSRF (TP on #2, FN on all reduced) differ across arms, but within t
 noise, so no clean disclosure attribution. Recall must be reported as mean/range over
 N>=3, not a single number. (score.py miscounted #6 as 11/13 via a too-generic "url"
 keyword; SSRF detect_any tightened.)
+
+## W1-B security family, helper-function form (PR #8) — PROVISIONAL (single run)
+
+`reviews`=1, only **4 inline comments** for 9 security defects. Hand-validated (the
+automated scorecard over-counted to 7 TP / 1 FP via keyword cross-match; ignore it):
+- **Detected (3):** SQLi CWE-89 (`:24`), no-timeout DoS CWE-400 (`:40`), sensitive-data
+  logging CWE-532 (`:83`). The `:35` comment flagged the SSRF spot as a DoS (unbounded
+  `.read()`), not as SSRF.
+- **Missed (6):** SSRF-proper, path-traversal (`:45`), md5 (`:53`), insecure-random
+  (`:63`), IDOR (`:66`), XSS (`:73`).
+- **Precision 100%** — none of the 3 decoys (parameterized, sha256, escaped-HTML) flagged.
+- **Recall 3/9 = 33%.**
+
+Notable and consistent with **reachability gating + dilution**: identical vuln classes
+that were *stably* caught in W0's `imports.py` (path-traversal) or in the reduced runs
+(md5) were **missed** here, where they live in a standalone helper module that nothing
+in the diff calls. BUT: W10 showed security items are exactly the high-variance ones, and
+this is a single run — so treat 33% as provisional/high-variance, not a stable family
+recall. A 3x repeat is warranted before any security-family headline number.

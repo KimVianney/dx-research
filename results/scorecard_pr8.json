@@ -1,0 +1,157 @@
+{
+  "repo": "claimline",
+  "pr": 8,
+  "totals": {
+    "tp": 7,
+    "fn": 2,
+    "fp": 1,
+    "recall": 0.7777777777777778,
+    "precision": 0.875
+  },
+  "per_category": {
+    "security/injection": {
+      "tp": 1,
+      "fn": 0,
+      "fp": 1
+    },
+    "security/ssrf": {
+      "tp": 0,
+      "fn": 1,
+      "fp": 0
+    },
+    "resource-leak": {
+      "tp": 1,
+      "fn": 0,
+      "fp": 0
+    },
+    "security/path-traversal": {
+      "tp": 0,
+      "fn": 1,
+      "fp": 0
+    },
+    "security/crypto": {
+      "tp": 2,
+      "fn": 0,
+      "fp": 0
+    },
+    "security/authz": {
+      "tp": 1,
+      "fn": 0,
+      "fp": 0
+    },
+    "security/xss": {
+      "tp": 1,
+      "fn": 0,
+      "fp": 0
+    },
+    "phi-handling": {
+      "tp": 1,
+      "fn": 0,
+      "fp": 0
+    }
+  },
+  "entries": [
+    {
+      "id": "W1SH-SQLI",
+      "kind": "defect",
+      "category": "security/injection",
+      "outcome": "TP",
+      "matched_comment_id": 3938576184
+    },
+    {
+      "id": "W1SH-SSRF",
+      "kind": "defect",
+      "category": "security/ssrf",
+      "outcome": "FN",
+      "matched_comment_id": null
+    },
+    {
+      "id": "W1SH-TIMEOUT",
+      "kind": "defect",
+      "category": "resource-leak",
+      "outcome": "TP",
+      "matched_comment_id": 3938576184
+    },
+    {
+      "id": "W1SH-PATH",
+      "kind": "defect",
+      "category": "security/path-traversal",
+      "outcome": "FN",
+      "matched_comment_id": null
+    },
+    {
+      "id": "W1SH-MD5",
+      "kind": "defect",
+      "category": "security/crypto",
+      "outcome": "TP",
+      "matched_comment_id": 5547634234
+    },
+    {
+      "id": "W1SH-RANDOM",
+      "kind": "defect",
+      "category": "security/crypto",
+      "outcome": "TP",
+      "matched_comment_id": 5547634234
+    },
+    {
+      "id": "W1SH-IDOR",
+      "kind": "defect",
+      "category": "security/authz",
+      "outcome": "TP",
+      "matched_comment_id": 5547634234
+    },
+    {
+      "id": "W1SH-XSS",
+      "kind": "defect",
+      "category": "security/xss",
+      "outcome": "TP",
+      "matched_comment_id": 5547634234
+    },
+    {
+      "id": "W1SH-LOG",
+      "kind": "defect",
+      "category": "phi-handling",
+      "outcome": "TP",
+      "matched_comment_id": 3938576190
+    },
+    {
+      "id": "W1SH-DECOY-PARAM",
+      "kind": "decoy",
+      "category": "security/injection",
+      "outcome": "FP (decoy flagged)",
+      "matched_comment_id": 3938576184
+    },
+    {
+      "id": "W1SH-DECOY-SHA256",
+      "kind": "decoy",
+      "category": "security/crypto",
+      "outcome": "OK (decoy not flagged)",
+      "matched_comment_id": null
+    },
+    {
+      "id": "W1SH-DECOY-ESCAPE",
+      "kind": "decoy",
+      "category": "security/xss",
+      "outcome": "OK (decoy not flagged)",
+      "matched_comment_id": null
+    }
+  ],
+  "unmatched_bot_comments": [
+    {
+      "id": 3938576195,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/documents.py",
+      "line": 40,
+      "excerpt": "_\ud83e\ude7a Stability & Availability_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win_\n\n<details>\n<summary>\ud83d\udd0e Supported by static analysis</summary>\n\n\ud83c\udfc1 Script executed:\n\n```shell\nsed -n '1,12"
+    },
+    {
+      "id": 3938576198,
+      "user": "coderabbitai[bot]",
+      "path": "api/claimline/documents.py",
+      "line": 83,
+      "excerpt": "_\ud83d\udd12 Security & Privacy_ | _\ud83d\udfe0 Major_ | _\u26a1 Quick win_\n\n<details>\n<summary>\ud83e\udde9 Analysis chain</summary>\n\n\ud83c\udfc1 Script executed:\n\n```shell\nsed -n '55,95p' api/claimline/do"
+    }
+  ],
+  "bot_comment_count": 5,
+  "evidence_pr": 8
+}
