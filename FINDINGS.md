@@ -258,3 +258,27 @@ that were *stably* caught in W0's `imports.py` (path-traversal) or in the reduce
 in the diff calls. BUT: W10 showed security items are exactly the high-variance ones, and
 this is a single run — so treat 33% as provisional/high-variance, not a stable family
 recall. A 3x repeat is warranted before any security-family headline number.
+
+## W1-C concurrency family (PR #9) — recall 6/7 = 86%, precision 100% (single run)
+
+`reviews`=1, 7 inline comments. Hand-validated by title:
+- **Detected (6):** wg.Add-inside-goroutine + shared-map race (both in one comment, `:18`),
+  Counter.Bump unsynchronized (`:33`), NotifyFirst goroutine leak (`:61`), shared-slice
+  concurrent append (`:73`), SafeStore missing-unlock-on-early-return deadlock (`:91`).
+- **Missed (1):** `time.Tick` ticker leak in the select loop (`:103`).
+- **Precision 100%:** none of the 3 decoys flagged as races. On the sync.Once decoy it
+  suggested "return a copy of the config map" (a valid aliasing nit, not a race claim) —
+  not counted as a concurrency FP.
+- **Bonus:** flagged that AggregateTotals doesn't apply settlement-eligibility rules
+  (skip denied/zero) like BuildRemittances — a real domain-logic catch.
+- Understood Go correctly: buffered channel sized to senders and sync.Once both accepted.
+
+**Cross-family pattern (important):** concurrency helpers scored 86% while the security
+helpers (PR #8) scored 33% — even though *both* are equally uncalled helper modules. So
+the security family's low recall is **not** simply "reachability/dilution": detection
+tracks defect TYPE. Local, mechanical, "textbook" defects (races, missing unlock,
+unsynchronized counters — like W10's stable-TP set) are caught reliably regardless of
+reachability; security-contextual defects (SQLi/XSS/IDOR/path/md5 — W10's unstable set)
+are flaky and drop sharply in low-context code. Reachability is one factor; defect
+class/obviousness looks like the stronger one. (Observed across single runs per family;
+still subject to the W10 variance caveat.)
