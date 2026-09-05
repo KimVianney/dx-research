@@ -365,3 +365,12 @@ was still throttled so PR #12 was manually triggered. **Takeaway: the default pr
 dominant lever for performance/soft-issue recall; the low CHILL numbers are largely a
 conservatism setting, not an inability.** Next: re-run the W0 mixed probe under assertive to
 see whether it recovers the stably-missed SSRF/res-leak/unbounded-quad and flaky SQLi/secret/XSS.
+
+## W4 mixed probe under assertive (PR #13) — recall 8/13, precision 100%
+
+Caught 8: CI-INJECT, CORR-CALC, md5, bare-except, hardcoded-AWS-key, concurrent-map race,
+unsafe migration, and **PERF-QUAD (unbounded O(n^2) dedup) — recovered, stably missed on
+CHILL**. Still missed: SQLi (dead fn), SSRF, resource-leak, XSS (unused cmp), and SEC-PATH
+flipped to missed (variance). **Clean two-cause resolution: assertive fixes performance/soft
+misses; it does NOT recover unreachable/dead-code security defects — those are reachability
+gating.** +3 bonus (dedup-key, units, requests-dep) again. See results/profiles.md.
