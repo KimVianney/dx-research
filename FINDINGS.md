@@ -309,3 +309,15 @@ key W4 test. (Single run; but 0/8 with all 4 comments non-perf is a strong signa
 | performance (W1-D) | 0/8 | perf deprioritized on CHILL |
 Pattern: detection tracks **defect type** — mechanical/local/correctness caught well;
 performance and low-context security caught poorly — more than it tracks reachability.
+
+## Rate-limit / auto-review pause observed (~PR #11)
+
+After ~11 review-triggering PRs over ~5.5h, **PR #11 received no CodeRabbit activity at
+all** ~10 min after opening — no "review in progress" placeholder, no review, no issue
+comment (contrast: every earlier PR got a placeholder within seconds). Reviews in the
+trailing hour were only ~4, so this is not the clean "10 included reviews/hour" cap;
+it looks like a burst/abuse throttle or auto-review pause after sustained volume.
+Action: **backing off** — spacing subsequent PRs much further apart and re-checking #11
+before opening new ones. (Observed once; will confirm whether #11 reviews after a delay.)
+This is itself a datum on operating the tool under load: rapid sequential PRs can silently
+stop being reviewed, with CI still running normally.
