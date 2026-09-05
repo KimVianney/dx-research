@@ -9,5 +9,6 @@ false-positives.
 |---|---|---|---|---|---|---|
 | security-helpers | #15,#16,#17 | 4/9, 6/9, 4/9 | **4.7/9 (52%)** | 44–67% | 100% (0 decoy FP) | stable-caught: path-traversal, sensitive-logging; stable-missed: SQLi (uncalled fn), SSRF-proper (always reframed as response-size/DoS); flaky: timeout, md5, insecure-random, IDOR, XSS |
 
+| concurrency | #18,#19,#20 | 6/7, 6/7, 6/7 | **6/7 (86%)** | 86% (no variance) | 100% (0 decoy FP) | stable-caught: wg.Add-in-goroutine, map race, counter race, goroutine leak, append race, missing-unlock; stable-missed: time.Tick ticker leak |
 _Baseline for context: security-helpers CHILL single run (PR #8) = 3/9 (33%)._
 _(concurrency, error-handling, correctness, performance rows appended as their batches complete.)_

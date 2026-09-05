@@ -409,3 +409,12 @@ and sensitive-logging stable-caught (3/3)**; **SQLi (uncalled fn) and SSRF-prope
 timeout/md5/insecure-random/IDOR/XSS are flaky (1-2/3). Confirms: assertive lifts security recall
 modestly but does NOT recover dead-code security defects, and security findings are high-variance
 (matches W10). See results/repeats.md.
+
+## Priority-1 N>=3 under assertive — concurrency (PRs #18/#19/#20)
+
+Recall **6/7 on all three runs** -> mean 6/7 (86%), **range 0 (perfectly stable)**; precision
+100% (no decoy flagged). The only miss is the `time.Tick` ticker leak (stable-missed, 0/3);
+the other six (wg.Add-in-goroutine, shared-map race, counter race, goroutine leak, append race,
+missing-unlock deadlock) are stable-caught 3/3. Matches CHILL PR#9 (6/7). Contrast with the
+security family's 44-67% swing: **mechanical/local defects are both high-recall and
+low-variance; security defects are the flaky, low ones.**
