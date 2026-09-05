@@ -1,56 +1,50 @@
-# STATUS — transparent CodeRabbit evaluation (pipeline RUNNING)
+# STATUS — transparent CodeRabbit evaluation — ALL PLANNED WAVES COMPLETE
 
-_Last updated: 2026-09-05 ~11:35Z (session session_019FtoBbsrGyBxSLTdgLe7tR)_
+_Last updated: 2026-09-05 ~20:52Z (session session_019FtoBbsrGyBxSLTdgLe7tR)_
 
-## State: core study complete + refinement pipeline actively running.
-Consolidated write-up in results/summary.md. Evidence in evidence/**, per-PR scorecards in
-results/scorecard_pr*.json, FINDINGS.md (append-only), profiles.md, determinism.md, validation.md,
-repeats.md (N≥3), w7-plan.md, self-report.md.
+## State: COMPLETE. No further probe PRs will be opened.
+Consolidated write-up: `results/summary.md` (§1-§10). Detail in `results/{repeats,determinism,
+profiles,validation,phi,w7-plan,w7-results,self-report,api-iac}.md`, `FINDINGS.md` (append-only),
+`results/scorecard_pr*.json`, `evidence/**`. Ground truth: `probes/manifest.yaml`.
 
-## Waves done (single-run core)
-- W0 fingerprint + mixed detection (PRs #1,#2, reduced re-run #4).
-- W1 families: A correctness 10/10 (#3/#5), B security-helpers 3/9 (#8), C concurrency 6/7 (#9),
-  D performance 0/8->4/8 assertive (#10/#12), E error-handling 4/7 (#11).
-- W10 determinism: 3 identical runs (#4/#6/#7) -> 31% of defects flip; recall 54-69%.
-- Disclosure A/B (#2/#3 vs #4/#5): confounded by variance.
-- W4 config: profile assertive perf 0/8->4/8 (#12), mixed under assertive (#13), two-cause
-  resolution (profile vs reachability); linter toggle + CI ingestion (#14).
+## Final family results (all hand-validated; precision 100% throughout)
 
-## N>=3 repeats under assertive (results/repeats.md) — IN PROGRESS
-- security-helpers (#15/#16/#17): mean 4.7/9 (52%), range 44-67%. DONE.
-- concurrency (#18/#19/#20): mean 6/7 (86%), range 0. DONE.
-- error-handling (#21/#22/#23): mean 4.7/7 (67%), range 57-71%. DONE.
-- correctness (#24/#25/#26): batch open, collection scheduled. IN PROGRESS.
-- performance: next batch (cherry-pick 071d87c, --manifest-pr 10).
+| family | recall | method / note |
+|---|---|---|
+| correctness (N≥3) | 9.3/10 | revised down from single-run 10/10 |
+| concurrency (N≥3) | 6/7 | zero variance |
+| error-handling (N≥3) | 4.7/7 | lint-backed core stable; judgment-heavy missed |
+| security-helpers (N≥3) | 4.7/9 | dead-code reachability gating |
+| performance (N≥3) | 1.7/8 perf-framed · 4/8 by-fix | biggest N≥3 correction; agentic co-located reframing |
+| PHI/domain | 2/5 | **presidio never fires**; egress-only, misses PHI at rest |
+| api-contract | 4/4 | LLM reasoning over the pydantic contract |
+| iac-ci | 9/11 | **SAST-driven** (Checkov/Trivy/zizmor); missed open-SSH |
+| W7 injection (baseline + 4 arms) | ROBUST | no surface suppressed; AGENTS.md + bidi self-flagged |
 
-## Key results
-- Precision 100% across all families (0 hard FPs; decoys never falsely flagged).
-- Recall tracks defect TYPE; wide run-to-run variance (report N>=3).
-- Mechanical/lint-backed defects = stable-caught floor; judgment-heavy = stable-missed; assertive
-  mostly adds flaky recovery, not new depth.
-- Default CHILL under-reports performance/soft issues; assertive is the biggest lever.
-- Dead-code security defects gated by reachability, not fixed by profile.
-- Auto-review pauses under sustained burst; manual @coderabbitai review still works. (This
-  session's P1 batches auto-reviewed without pausing.)
+## Cross-cutting conclusions
+- **Precision 100% everywhere** — zero hard false positives; no decoy (provably-correct look-alike)
+  was ever flagged across the whole study.
+- **Recall tracks defect TYPE**, with large run-to-run variance (W10: 31% of defects flip) — hence
+  N≥3. Single-run figures over-state stability (even correctness dropped 10→9.3).
+- **Detection is a blend of channels**: own LLM reasoning (correctness, contracts, concurrency,
+  PHI-egress), bundled SAST (ast-grep for path-traversal; Checkov/Trivy/zizmor for IaC), and CI-
+  annotation ingestion (ruff via GitHub Actions, timing-dependent). PHI is reasoning-only (no
+  presidio); IaC is SAST-only.
+- **assertive profile** raises volume/by-fix coverage at no precision cost, but does NOT make
+  CodeRabbit a reliable performance reviewer (21% perf-framed) and does NOT surface dead-code
+  security defects (reachability gating).
+- **W7:** CodeRabbit's intake is robust to single-shot prompt injection on every PR-controlled
+  surface tested; it treats PR body, code comments, an auto-ingested AGENTS.md, and bidi/homoglyph
+  text as untrusted, and reported the malicious AGENTS.md and the U+202E char as findings.
+- **Self-report** agrees with observed behaviour and, on the SSRF miss, CodeRabbit went agentic and
+  admitted a genuine false negative it could not explain (and persisted Learnings — W6 live).
 
-## Authorization / scope updates
-- **W7 (prompt-injection robustness): AUTHORIZED + DONE.** Owner-authorized directly in-session
-  (2026-09-05). Defensive scope; two CI-silent canaries (path-traversal + Go map race), baseline
-  3/3, 4 injection arms (PR-body, source-comment, AGENTS.md, unicode) N=3 each. **Verdict: ROBUST
-  on all four — no surface suppressed detection; AGENTS.md and the bidi char were themselves
-  flagged.** See results/w7-results.md + summary §10.
-- **dx-research is PUBLIC** (verified via API: private=false).
+## Integrity & safety (held throughout)
+- Transparent study; no blinding, no tool deception, no history rewriting. W7 was authorized
+  directly in-session by the owner, defensive scope, benign markers, no internal-prompt extraction.
+- canary/example credentials only; no live/exploitable endpoints; nothing contacts third parties.
+- claimline `main` clean + green; **all 48 probe PRs (#1-#48) closed UNMERGED**; injection files
+  (AGENTS.md, unicode, nightly-probe.yml) never reached main (verified). dx-research PUBLIC.
 
-## Repo hygiene
-- claimline main clean + green; .coderabbit.yaml = assertive (ruff re-enabled).
-- All probe PRs closed unmerged (#1-#45 closed; injection files AGENTS.md/unicode never on main).
-
-## N>=3 repeats DONE (results/repeats.md)
-- security 4.7/9, concurrency 6/7, error-handling 4.7/7, correctness 9.3/10,
-  performance 1.7/8 perf-framed (4/8 by-fix). PHI 2/5 (presidio never fires).
-
-## Remaining pipeline (task order)
-1. P3 self-report probe (results/self-report.md) + autofix/docstrings/unit-test checkboxes.
-2. P4 api-contract + iac-ci families.
-Skipped per owner: W3 scale/truncation, W11 private control. W9 pre-merge depth optional.
-DONE: P1 N>=3 (all 5 families), P2 PHI, W7 (all 4 arms).
+## Skipped per owner
+W3 (scale/truncation), W11 (private control). W9 (pre-merge depth) optional / not run.
