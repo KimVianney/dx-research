@@ -541,3 +541,14 @@ of the missed report" — i.e. it confirms a genuine false negative, not intenti
 matching our stable-missed SSRF. Also: it PERSISTED two Learnings (W6 learnings-persistence
 confirmed live) recording the SSRF sinks. Prompt-for-AI-Agents preamble invariant (matches 113/113).
 Run config captured verbatim (ASSERTIVE/Advanced). See results/self-report.md.
+
+## api-contract (PR #47) 4/4 + iac-ci (PR #48) 9/11 — the SAST-vs-reasoning split
+
+api-contract: 4/4 pydantic-contract drift caught by LLM reasoning (shape/type, Literal enum
+[web-verified], 201-vs-200, None-vs-non-optional); decoy clean. iac-ci: 9/11 (missed open-SSH
+0.0.0.0/0 and a redundant public-access-block; both S3/DB/Docker/Actions misconfigs caught), decoy
+clean, +3 bonus real findings. KEY: iac-ci is almost entirely SAST-driven — every finding carries
+Checkov/Trivy (terraform+Docker) or zizmor (Actions) tool lines ("Source: Linters/SAST tools"),
+whereas api-contract used pure LLM reasoning. So CodeRabbit's IaC coverage ≈ its bundled IaC
+scanners (high recall on covered rules, misses rules that don't fire); its contract/correctness
+coverage is its own reasoning. See results/api-iac.md.

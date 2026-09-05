@@ -46,6 +46,8 @@ determinism section for why that matters.
 | security (helpers, W1-B) | 3/9 | 100% | many missed in an uncalled module |
 | performance (W1-D) | 0/8 | 100% | **CHILL suppresses perf** (see §5) |
 | PHI/domain (assertive) | 2/5 | 100% | **`presidio` never fires**; PHI = generic CWE-598/359 egress only; misses PHI in logs/errors/fixtures (see `results/phi.md`) |
+| api-contract (assertive) | 4/4 | 100% | pydantic-contract drift caught by LLM reasoning (web-verified the Literal case); see `results/api-iac.md` |
+| iac-ci (assertive) | 9/11 | 100% | **SAST-driven** (Checkov/Trivy/zizmor); missed only open-SSH `0.0.0.0/0`; see `results/api-iac.md` |
 | W0 mixed (13) | 7-9/13 | 100% | across 4 runs |
 
 _Note: the recall figures above are the original single-run/CHILL values; the **N≥3 assertive
