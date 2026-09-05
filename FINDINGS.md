@@ -456,3 +456,32 @@ boundary** (`<` vs `<=`) genuinely flipped to FN on #26. Note the single-run CHI
 ~1-defect run-to-run flip, reinforcing that single-run recall over-states stability. Hand-validated:
 lines 37/42 are dual truncation+ZeroDivision defects (manifest detect_any covers both), so
 CodeRabbit's ZeroDivisionError flags there are true positives, not off-target.
+
+## Priority-1 N>=3 under assertive — performance (PRs #27/#28/#29) — headline correction
+
+Two metrics (hand-validated against 8 perf defects + 3 decoys):
+- **perf-FRAMED recall** (finding labeled 🚀 Performance on a planted perf defect): 1/8, 1/8, 3/8
+  -> **mean 1.7/8 (21%)**, range 1-3.
+- **by-fix recall** (defect's inefficiency removed by the proposed fix, any label): 3/8, 4/8, 5/8
+  -> **mean 4/8 (50%)**, range 3-5.
+Precision 100% (decoys stream_lines/filter_active_fast/shares_precomputed never flagged; CodeRabbit
+even cited them as the correct versions to delegate to).
+
+**This is the study's sharpest N>=3 correction.** The single-run assertive 4/8 (PR #12) had been
+read as "assertive quadruples perf recall"; N>=3 shows 4/8 was the top of a wide range and mean
+perf-framed recall is only ~21%. The mechanism: CodeRabbit's **agentic static analysis** (visible
+`🔎 Supported by static analysis` blocks running ast-grep/rg/python3) repeatedly finds a co-located
+CORRECTNESS/SECURITY bug at the exact line of a perf defect and reports THAT instead of the perf
+angle — CSV-injection at the string-concat line (38), cross-payer contamination at the
+sort-in-loop line (46), a Unicode/`\d` regex bug at the regex-compile line (60). So the line gets
+fixed, but not as "performance." Only load-then-filter->SQL (68) is a stable perf-framed catch
+(3/3). Updated summary.md §5 and repeats.md accordingly.
+
+Bonus (unplanted, real): a `TypeError` risk from `r["status"]` when the cursor returns tuple rows
+(line 70) was flagged in all three runs — a genuine robustness catch not in the manifest.
+
+### P1 N>=3 repeats COMPLETE (all five families)
+security-helpers 4.7/9 (52%) · concurrency 6/7 (86%) · error-handling 4.7/7 (67%) ·
+correctness 9.3/10 (93%) · performance 1.7/8 perf-framed (21%) / 4/8 by-fix (50%). Precision 100%
+across all. Single-run figures over-stated recall for correctness (10->9.3) and especially
+performance (4->1.7 perf-framed); N>=3 was necessary.

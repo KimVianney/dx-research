@@ -74,9 +74,14 @@ owner's original question (was the AWS-key's Minor/Stability rating README-induc
 ## 5. Config profile (W4) — the biggest lever, and a two-cause resolution
 
 `.coderabbit.yaml profile: assertive` vs default CHILL, identical probes:
-- **Performance family: 0/8 (CHILL) -> 4/8 (assertive)**, comment volume 4->8, precision
-  still 100%. Assertive caught recompute-O(n^2), quadratic membership, load-then-filter
-  (push to SQL), regex-compile-in-loop.
+- **Performance family: 0/8 (CHILL) -> single-run 4/8 (assertive, PR #12).** ⚠️ **N≥3 REVISES
+  THIS DOWN** (see `results/repeats.md`, PRs #27/#28/#29): mean **perf-*framed* recall is only
+  1.7/8 (21%)**, range 1–3/8 — the single-run 4/8 was the lucky top of a wide range, not a stable
+  quadrupling. What IS robust: the defects' inefficiencies still get *fixed* ~50% of the time
+  (**by-fix mean 4/8**), but usually under a **correctness/security label**, not a performance one —
+  CodeRabbit's agentic static analysis finds a co-located bug at the perf defect's exact line
+  (CSV-injection, cross-payer contamination, Unicode-regex) and reports that instead. Only
+  load-then-filter→SQL is a stable perf-framed catch (3/3). Precision still 100%.
 - **Mixed probe under assertive recovered the unbounded-O(n^2) dedup** that CHILL stably
   missed — but **still missed the dead-code security defects** (SQLi in an uncalled fn,
   SSRF, resource-leak, XSS in an unrendered component).
@@ -87,8 +92,12 @@ owner's original question (was the AWS-key's Minor/Stability rating README-induc
    `assertive`; would require the defect to be reachable (or a whole-file/context setting).
 
 Practical takeaway for the owner: the **default CHILL profile is materially under-reporting
-performance and soft issues**; switching to `assertive` roughly quadrupled perf recall with
-no precision cost. It will not, by itself, surface issues in code the tool judges unreachable.
+performance and soft issues**, and `assertive` raises comment volume and by-fix coverage with no
+precision cost — but (per the N≥3 correction above) **do not treat CodeRabbit as a reliable
+performance reviewer**: whether it *labels/reasons* an issue as performance is high-variance
+(21% perf-framed over N≥3). Its agentic pass is better understood as a general co-located-bug
+finder that frequently surfaces the more-severe correctness/security issue sitting on the same
+line. Neither profile will, by itself, surface issues in code the tool judges unreachable.
 
 ## 6. Linters & CI integration (W4 toggle / W8 preview)
 
