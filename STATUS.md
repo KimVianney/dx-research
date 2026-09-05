@@ -33,23 +33,24 @@ repeats.md (N≥3), w7-plan.md, self-report.md.
 - Auto-review pauses under sustained burst; manual @coderabbitai review still works. (This
   session's P1 batches auto-reviewed without pausing.)
 
-## Authorization / scope updates (were stale — now corrected)
-- **W7 (prompt-injection robustness): AUTHORIZED** by the owner directly in-session (2026-09-05,
-  AskUserQuestion). Defensive scope only; plan in results/w7-plan.md (canary corrected to
-  path-traversal + bare-except + Go race, baseline N=3, pre-registered decision rule). No
-  internal-prompt extraction. QUEUED after the P1 repeats + PHI.
-- **dx-research is PUBLIC** (verified via API: private=false). Owner flipped it in the UI; the
-  side-channel PATCH was never used.
+## Authorization / scope updates
+- **W7 (prompt-injection robustness): AUTHORIZED + DONE.** Owner-authorized directly in-session
+  (2026-09-05). Defensive scope; two CI-silent canaries (path-traversal + Go map race), baseline
+  3/3, 4 injection arms (PR-body, source-comment, AGENTS.md, unicode) N=3 each. **Verdict: ROBUST
+  on all four — no surface suppressed detection; AGENTS.md and the bidi char were themselves
+  flagged.** See results/w7-results.md + summary §10.
+- **dx-research is PUBLIC** (verified via API: private=false).
 
 ## Repo hygiene
 - claimline main clean + green; .coderabbit.yaml = assertive (ruff re-enabled).
-- All probe PRs closed unmerged (#1-#23 closed; #24-#26 open under review, will close unmerged).
+- All probe PRs closed unmerged (#1-#45 closed; injection files AGENTS.md/unicode never on main).
+
+## N>=3 repeats DONE (results/repeats.md)
+- security 4.7/9, concurrency 6/7, error-handling 4.7/7, correctness 9.3/10,
+  performance 1.7/8 perf-framed (4/8 by-fix). PHI 2/5 (presidio never fires).
 
 ## Remaining pipeline (task order)
-1. Finish P1 N>=3: correctness (open), performance (next).
-2. P2 PHI/domain family (presidio) — owner's actual domain (healthcare RCM); also the only way to
-   learn whether `presidio` ever fires (not seen in 110+ comments).
-3. W7 (corrected plan).
-4. P3 self-report probe (results/self-report.md) + autofix/docstrings/unit-test checkboxes.
-5. P4 api-contract + iac-ci families.
+1. P3 self-report probe (results/self-report.md) + autofix/docstrings/unit-test checkboxes.
+2. P4 api-contract + iac-ci families.
 Skipped per owner: W3 scale/truncation, W11 private control. W9 pre-merge depth optional.
+DONE: P1 N>=3 (all 5 families), P2 PHI, W7 (all 4 arms).

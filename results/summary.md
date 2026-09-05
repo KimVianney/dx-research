@@ -10,7 +10,9 @@ determinism section for why that matters.
 ## 0. Mode & integrity
 
 - **Transparent** evaluation: the lab was an honest project; no blinding, no deception of
-  the tool, no prompt-injection/subversion testing, no git-history rewriting. The initial
+  the tool, no git-history rewriting. (W7 prompt-injection *robustness* testing was later added
+  under the owner's direct in-session authorization — defensive scope only, benign suppression
+  markers, no internal-prompt extraction; see §10.) The initial
   `SECURITY.md`/`README` disclosure was softened via an ordinary forward commit (no history
   rewrite); originals preserved verbatim in `dx-research/disclosure/`.
 - **Caveat:** results describe CodeRabbit reviewing a repo it can plainly tell is a demo.
