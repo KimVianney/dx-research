@@ -282,3 +282,30 @@ reachability; security-contextual defects (SQLi/XSS/IDOR/path/md5 — W10's unst
 are flaky and drop sharply in low-context code. Reachability is one factor; defect
 class/obviousness looks like the stronger one. (Observed across single runs per family;
 still subject to the W10 variance caveat.)
+
+## W1-D performance family (PR #10) — recall 0/8 for perf; precision 100% (single run)
+
+`reviews`=1, 4 inline comments. Hand-validated: **none of the 8 planted performance
+defects were flagged as performance issues** (verified: zero perf terms — no
+N+1/O(n^2)/memory/set/precompile/WHERE — in any comment body). Missed: N+1, unbounded
+read, recompute-in-loop O(n^2), string concat, sort-in-loop, list-membership O(n*m),
+regex-compile-in-loop, load-then-filter-in-Python.
+- **Precision 100%:** no comments on the 3 decoy lines.
+- **4 bonus (correctness/quality) findings** on the same functions instead: return
+  cumulative shares; use `csv.writer` (CSV escaping); rank within each group not globally;
+  require an exact ASCII 5-digit CPT match (\\d matches non-ASCII digits).
+
+**Signal:** on the CHILL profile CodeRabbit strongly deprioritizes pure performance
+findings (consistent with W0's stably-missed unbounded O(n^2)), while still opportunistically
+raising correctness on the same code. Whether the `assertive` profile surfaces perf is the
+key W4 test. (Single run; but 0/8 with all 4 comments non-perf is a strong signal, not noise.)
+
+### Cross-family recall snapshot so far (single-run, provisional per W10)
+| family | recall | notes |
+|---|---|---|
+| correctness (W1-A) | 10/10 | disclosure-invariant |
+| security helpers (W1-B) | 3/9 | security-contextual defects flaky in low-context code |
+| concurrency (W1-C) | 6/7 | mechanical/local defects caught reliably |
+| performance (W1-D) | 0/8 | perf deprioritized on CHILL |
+Pattern: detection tracks **defect type** — mechanical/local/correctness caught well;
+performance and low-context security caught poorly — more than it tracks reachability.
