@@ -321,3 +321,36 @@ Action: **backing off** — spacing subsequent PRs much further apart and re-che
 before opening new ones. (Observed once; will confirm whether #11 reviews after a delay.)
 This is itself a datum on operating the tool under load: rapid sequential PRs can silently
 stop being reviewed, with CI still running normally.
+
+## UPDATE — auto-review pause is manual-recoverable
+
+The PR #11 silence was an **auto-review pause**, not a total block: a manual
+`@coderabbitai review` comment (00:41:35Z) got a reply at 00:41:47Z and a full review
+at 00:41:57Z (~12s). So under sustained volume CodeRabbit stops *auto*-reviewing new PRs
+but still honors explicit `@coderabbitai review`. Operational implication: after a burst,
+drive reviews manually. (Auto-review resumed-by-command; will keep spacing PRs out.)
+
+## W1-E error-handling family (PR #11, manually triggered) — recall 4/7 = 57%, precision 100%
+
+`reviews`=1, 4 inline comments. Hand-validated by title:
+- **Detected (4):** except:pass + return True ("don't convert operational failures into
+  valid remittances", `:20`), re-raise without cause (`:36`), broad-except returning bad
+  state in settle (`:48`), file not closed on write failure (`:53`).
+- **Missed (3):** except->return None hiding errors (`:28`), generic `Exception` raised
+  instead of a specific type (`:63`), ignored reversal return/failure (`:69`).
+- **Precision 100%:** none of the 3 decoys (raise-from, with-block, narrow log+reraise) flagged.
+- ruff independently catches S110 (swallow) and B904 (no-from); CodeRabbit caught those two
+  plus two it found on its own (broad-except, no-finally). The misses are the more
+  judgment-based ones — consistent with the type-not-reachability pattern.
+
+### Cross-family recall snapshot (single-run, provisional per W10)
+| family | recall | precision |
+|---|---|---|
+| correctness (W1-A) | 10/10 | 100% |
+| security helpers (W1-B) | 3/9 | 100% |
+| concurrency (W1-C) | 6/7 | 100% |
+| performance (W1-D) | 0/8 | 100% |
+| error-handling (W1-E) | 4/7 | 100% |
+Precision has been 100% across every family so far (0 hard false positives; decoys never
+falsely flagged). Recall varies widely by defect type: mechanical/correctness/concurrency
+high; performance and low-context security low.
