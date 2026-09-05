@@ -43,7 +43,11 @@ determinism section for why that matters.
 | error-handling (W1-E) | 4/7 | 100% | caught mechanical ones; missed judgment-y ones |
 | security (helpers, W1-B) | 3/9 | 100% | many missed in an uncalled module |
 | performance (W1-D) | 0/8 | 100% | **CHILL suppresses perf** (see §5) |
+| PHI/domain (assertive) | 2/5 | 100% | **`presidio` never fires**; PHI = generic CWE-598/359 egress only; misses PHI in logs/errors/fixtures (see `results/phi.md`) |
 | W0 mixed (13) | 7-9/13 | 100% | across 4 runs |
+
+_Note: the recall figures above are the original single-run/CHILL values; the **N≥3 assertive
+means** (which revise several of them, esp. performance and correctness) are in `results/repeats.md`._
 
 **Precision was 100% in every family** — zero hard false positives; decoys (provably
 correct look-alikes) were never falsely flagged. **Recall varies enormously by defect

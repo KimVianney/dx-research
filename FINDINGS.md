@@ -485,3 +485,14 @@ security-helpers 4.7/9 (52%) · concurrency 6/7 (86%) · error-handling 4.7/7 (6
 correctness 9.3/10 (93%) · performance 1.7/8 perf-framed (21%) / 4/8 by-fix (50%). Precision 100%
 across all. Single-run figures over-stated recall for correctness (10->9.3) and especially
 performance (4->1.7 perf-framed); N>=3 was necessary.
+
+## PHI/domain family (PR #30) — presidio never fires; PHI = egress-only CWE reasoning
+
+Recall **2/5 (40%)**, precision 100% (redacted decoy clean). Detected: SSN-in-URL (CWE-598) and
+full-record-to-payer / minimum-necessary (CWE-359), both under "🔒 Security & Privacy", both with a
+`cr-reachability` tag (flagged despite the helpers being uncalled). MISSED: PHI logged at INFO
+(no CWE-532), PHI in an error string, and hardcoded PHI in a source fixture. **`presidio` appears
+NOWHERE** in the review (including the agentic script blocks) — PHI is caught by CodeRabbit's own
+security reasoning as generic sensitive-data-EGRESS, not by a PII/PHI scanner and not as a
+dedicated data-privacy category. Owner takeaway: CodeRabbit catches PHI *leaving* the system but
+NOT PHI at rest (logs/errors/fixtures); it is not a HIPAA linter. See results/phi.md.
