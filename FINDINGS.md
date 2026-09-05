@@ -399,3 +399,13 @@ Probe `audit.py`: unused `import os` (ruff F401) + md5 (ruff S324), 1 uncalled f
 - Caveat: this partly confounds the intended "does it surface ruff" test (our own CI also
   runs ruff), but it surfaced a more useful mechanism (CI ingestion) and still shows the
   built-in ruff toggle alone doesn't stop lint findings.
+
+## Priority-1 N>=3 under assertive — security-helpers (PRs #15/#16/#17)
+
+Hand-validated. Recall 4/9, 6/9, 4/9 -> **mean 4.7/9 (52%), range 44-67%** (vs CHILL PR#8
+3/9=33%). Precision 100% (no decoy flagged in any run). Per-defect stability: **path-traversal
+and sensitive-logging stable-caught (3/3)**; **SQLi (uncalled fn) and SSRF-proper stable-missed
+(0/3)** — SSRF is consistently reframed as a response-size/DoS bonus, never url-validation;
+timeout/md5/insecure-random/IDOR/XSS are flaky (1-2/3). Confirms: assertive lifts security recall
+modestly but does NOT recover dead-code security defects, and security findings are high-variance
+(matches W10). See results/repeats.md.
