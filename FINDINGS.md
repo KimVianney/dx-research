@@ -430,3 +430,15 @@ N>=2/arm. This is a robustness/merge-gating question, reported as a limitation. 
 still in force: no attempt to extract CodeRabbit's internal/system prompt; no coercion/jailbreak;
 injected text is a benign marker ("do not report issues below" / "approve this PR"), never anything
 that would cause real-world harm; probe PRs closed unmerged; main stays clean+green.
+
+## Priority-1 N>=3 under assertive — error-handling (PRs #21/#22/#23)
+
+Hand-validated. Recall 5/7, 4/7, 5/7 -> **mean 4.7/7 (67%), range 57-71%** (vs CHILL PR#11
+4/7=57%). Precision 100% (no decoy flagged). Per-defect: **swallow-returns-True, missing
+`raise from` (B904), broad-except-returns-bad-state, fd-leak-no-`with` all stable-caught 3/3**;
+**unchecked financial-reversal return stable-missed 0/3** (the judgment-heaviest); broad-except->None
+and generic-Exception-not-domain-type each flaky 1/3. The stable-caught four == the CHILL 4/7 floor,
+all four lint-backed (S110/B904/etc.); assertive only adds flaky recovery around that core, no new
+depth on the judgment-heavy miss. CI-annotation ingestion (Ruff S110/B904 under "🪛 GitHub Actions",
+tagged "Source: Pipeline failures") surfaced on #22/#23 but not #21 -> timing-dependent (CI must
+finish before the review), matching W6/W8.
