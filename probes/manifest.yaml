@@ -751,3 +751,116 @@ probes:
     description: "shares_precomputed hoists the grand total; flagging recompute is a FP."
     detect_any: ["recompute", "inside the loop", "each iteration", "quadratic"]
     kind: decoy
+
+  # ==== W1-E error-handling family (feat/claim-error-handling, PR #11) ====
+  - id: W1E-SWALLOW
+    wave: 1
+    repo: claimline
+    pr: 11
+    category: error-handling
+    severity_expected: high
+    file: api/claimline/remittance.py
+    line: 18
+    description: "post_remittance swallows all exceptions (except: pass) and returns True regardless."
+    detect_any: ["swallow", "silently", "except", "pass", "returns true", "log"]
+    kind: defect
+  - id: W1E-RETURN-NONE
+    wave: 1
+    repo: claimline
+    pr: 11
+    category: error-handling
+    severity_expected: medium
+    file: api/claimline/remittance.py
+    line: 28
+    description: "load_payer_config catches Exception and returns None, hiding failures from callers."
+    detect_any: ["broad except", "return none", "hide", "swallow", "specific exception"]
+    kind: defect
+  - id: W1E-NO-FROM
+    wave: 1
+    repo: claimline
+    pr: 11
+    category: error-handling
+    severity_expected: low
+    file: api/claimline/remittance.py
+    line: 36
+    description: "parse_amount re-raises RemittanceError without `from`, losing the original cause."
+    detect_any: ["from", "raise from", "chain", "cause", "b904", "context"]
+    kind: defect
+  - id: W1E-BROAD-DEBUG
+    wave: 1
+    repo: claimline
+    pr: 11
+    category: error-handling
+    severity_expected: high
+    file: api/claimline/remittance.py
+    line: 47
+    description: "settle wraps a large block in except Exception, logs at debug, and returns bad state."
+    detect_any: ["broad", "too broad", "debug", "bad state", "swallow", "specific"]
+    kind: defect
+  - id: W1E-NO-FINALLY
+    wave: 1
+    repo: claimline
+    pr: 11
+    category: resource-leak
+    severity_expected: medium
+    file: api/claimline/remittance.py
+    line: 53
+    description: "write_payer_file opens a file without with/finally; a write error leaks the handle."
+    detect_any: ["with", "context manager", "finally", "not closed", "leak", "close"]
+    kind: defect
+  - id: W1E-BARE-EXC
+    wave: 1
+    repo: claimline
+    pr: 11
+    category: error-handling
+    severity_expected: low
+    file: api/claimline/remittance.py
+    line: 63
+    description: "require_payer raises a generic Exception instead of a specific type."
+    detect_any: ["specific exception", "generic", "bare exception", "custom exception", "too general"]
+    kind: defect
+  - id: W1E-IGNORE-RET
+    wave: 1
+    repo: claimline
+    pr: 11
+    category: error-handling
+    severity_expected: medium
+    file: api/claimline/remittance.py
+    line: 69
+    description: "reverse_if_denied calls gateway.reverse without checking success or handling failure of a financial reversal."
+    detect_any: ["return value", "ignored", "check the result", "error handling", "unchecked", "success"]
+    kind: defect
+  # decoys (correct error handling)
+  - id: W1E-DECOY-FROM
+    wave: 1
+    repo: claimline
+    pr: 11
+    category: error-handling
+    severity_expected: informational
+    file: api/claimline/remittance.py
+    line: 81
+    description: "parse_amount_ok correctly chains with `from exc`; flagging is a FP."
+    detect_any: ["raise from", "missing from", "chain", "cause"]
+    kind: decoy
+  - id: W1E-DECOY-WITH
+    wave: 1
+    repo: claimline
+    pr: 11
+    category: resource-leak
+    severity_expected: informational
+    file: api/claimline/remittance.py
+    line: 86
+    description: "write_payer_file_ok uses a with-block; flagging a leak is a FP."
+    detect_any: ["not closed", "context manager", "leak", "finally"]
+    kind: decoy
+  - id: W1E-DECOY-RERAISE
+    wave: 1
+    repo: claimline
+    pr: 11
+    category: error-handling
+    severity_expected: informational
+    file: api/claimline/remittance.py
+    line: 96
+    description: "post_remittance_ok logs and re-raises a narrow ConnectionError; flagging is a FP."
+    detect_any: ["swallow", "broad except", "should re-raise", "silently"]
+    kind: decoy
