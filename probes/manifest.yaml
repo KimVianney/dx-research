@@ -864,3 +864,74 @@ probes:
     description: "post_remittance_ok logs and re-raises a narrow ConnectionError; flagging is a FP."
     detect_any: ["swallow", "broad except", "should re-raise", "silently"]
     kind: decoy
+
+  # ==== PHI/domain family (feat/claim-phi, PR #30) ====
+  # Healthcare-RCM PHI handling. Probes whether CodeRabbit (and/or a `presidio`
+  # integration, which has not appeared in 110+ prior comments) flags PHI/PII
+  # leakage. Synthetic member data only; helper functions, no live endpoints.
+  - id: PHI-LOG
+    wave: phi
+    repo: claimline
+    pr: 30
+    category: data-privacy
+    severity_expected: high
+    file: api/claimline/phi.py
+    line: 28
+    description: "log_eligibility_check logs member name, DOB, and SSN at INFO (PHI in logs)."
+    detect_any: ["phi", "pii", "sensitive", "ssn", "log", "redact", "mask", "presidio", "hipaa", "personal"]
+    kind: defect
+  - id: PHI-ERROR-MSG
+    wave: phi
+    repo: claimline
+    pr: 30
+    category: data-privacy
+    severity_expected: medium
+    file: api/claimline/phi.py
+    line: 40
+    description: "coverage_error embeds name/DOB/SSN in an error string that may surface to clients/logs."
+    detect_any: ["phi", "pii", "sensitive", "ssn", "error message", "leak", "expose", "redact", "presidio"]
+    kind: defect
+  - id: PHI-URL-QUERY
+    wave: phi
+    repo: claimline
+    pr: 30
+    category: data-privacy
+    severity_expected: high
+    file: api/claimline/phi.py
+    line: 49
+    description: "eligibility_url places SSN and DOB in URL query params (logged by proxies/servers)."
+    detect_any: ["phi", "pii", "ssn", "query string", "url", "query param", "logged", "sensitive", "header", "body", "presidio"]
+    kind: defect
+  - id: PHI-API-BOUNDARY
+    wave: phi
+    repo: claimline
+    pr: 30
+    category: data-privacy
+    severity_expected: medium
+    file: api/claimline/phi.py
+    line: 60
+    description: "payer_submission_payload sends the full member record (incl SSN/DOB) when only member_id is needed (minimum necessary)."
+    detect_any: ["phi", "pii", "ssn", "minimum necessary", "over-share", "full record", "only member_id", "data minimization", "sensitive", "presidio"]
+    kind: defect
+  - id: PHI-FIXTURE
+    wave: phi
+    repo: claimline
+    pr: 30
+    category: data-privacy
+    severity_expected: low
+    file: api/claimline/phi.py
+    line: 65
+    description: "SAMPLE_MEMBER hardcodes realistic-looking unredacted PHI (name/DOB/SSN) in source."
+    detect_any: ["phi", "pii", "ssn", "hardcoded", "sample", "fixture", "test data", "synthetic", "fake", "redact", "presidio"]
+    kind: defect
+  - id: PHI-DECOY-REDACTED
+    wave: phi
+    repo: claimline
+    pr: 30
+    category: data-privacy
+    severity_expected: informational
+    file: api/claimline/phi.py
+    line: 86
+    description: "log_eligibility_check_safe already masks the SSN via _mask_ssn; flagging it for PHI is a FP."
+    detect_any: ["phi", "pii", "ssn", "leak", "unmasked", "redact"]
+    kind: decoy
