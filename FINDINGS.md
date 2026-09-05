@@ -354,3 +354,14 @@ drive reviews manually. (Auto-review resumed-by-command; will keep spacing PRs o
 Precision has been 100% across every family so far (0 hard false positives; decoys never
 falsely flagged). Recall varies widely by defect type: mechanical/correctness/concurrency
 high; performance and low-context security low.
+
+## W4 — review profile CHILL vs ASSERTIVE (performance family) — see results/profiles.md
+
+Identical perf probe: **CHILL (PR #10) 0/8 perf recall -> ASSERTIVE (PR #12) 4/8**, comment
+volume 4->8, precision 100% both. Assertive caught recompute-O(n^2), quadratic membership,
+load-then-filter (push to SQL), and regex-compile-in-loop; still missed N+1, and flagged
+unbounded-read/string-concat/sort-in-loop on correctness rather than perf grounds. Auto-review
+was still throttled so PR #12 was manually triggered. **Takeaway: the default profile is the
+dominant lever for performance/soft-issue recall; the low CHILL numbers are largely a
+conservatism setting, not an inability.** Next: re-run the W0 mixed probe under assertive to
+see whether it recovers the stably-missed SSRF/res-leak/unbounded-quad and flaky SQLi/secret/XSS.
