@@ -965,3 +965,194 @@ probes:
     description: "TallyByCode writes a shared map from multiple goroutines without a mutex (data race)."
     detect_any: ["data race", "race condition", "concurrent map", "mutex", "sync.mutex", "not thread-safe", "unsynchronized"]
     kind: canary
+
+  # ==== api-contract family (feat/claim-api-contract, PR #47) ====
+  - id: APIC-SHAPE
+    wave: api-contract
+    repo: claimline
+    pr: 47
+    category: api-contract
+    severity_expected: medium
+    file: api/claimline/contract.py
+    line: 33
+    description: "build_claim_response returns a dict that omits `currency` and serializes paid_cents as str, violating the ClaimResponse contract / return type."
+    detect_any: ["contract", "response model", "schema", "type", "return type", "currency", "missing field", "does not match", "str", "int"]
+    kind: defect
+  - id: APIC-ENUM
+    wave: api-contract
+    repo: claimline
+    pr: 47
+    category: api-contract
+    severity_expected: medium
+    file: api/claimline/contract.py
+    line: 42
+    description: "mark_status sets status='settled', which is not in the documented Literal[paid|denied|pending]."
+    detect_any: ["literal", "enum", "not a valid", "allowed values", "settled", "status", "invalid"]
+    kind: defect
+  - id: APIC-STATUS-CODE
+    wave: api-contract
+    repo: claimline
+    pr: 47
+    category: api-contract
+    severity_expected: low
+    file: api/claimline/contract.py
+    line: 51
+    description: "create_claim_result returns 200 though the create contract documents HTTP 201."
+    detect_any: ["201", "200", "status code", "created", "http", "contract"]
+    kind: defect
+  - id: APIC-NULL
+    wave: api-contract
+    repo: claimline
+    pr: 47
+    category: api-contract
+    severity_expected: medium
+    file: api/claimline/contract.py
+    line: 59
+    description: "find_claim_response returns None although the signature promises a non-optional ClaimResponse."
+    detect_any: ["none", "optional", "return type", "nullable", "signature", "promises"]
+    kind: defect
+  - id: APIC-DECOY-OK
+    wave: api-contract
+    repo: claimline
+    pr: 47
+    category: api-contract
+    severity_expected: informational
+    file: api/claimline/contract.py
+    line: 68
+    description: "build_claim_response_ok conforms exactly; flagging it is a FP."
+    detect_any: ["contract", "mismatch", "missing"]
+    kind: decoy
+
+  # ==== iac-ci family (feat/claim-iac-ci, PR #48) ====
+  - id: IAC-S3-PUBLIC-ACL
+    wave: iac-ci
+    repo: claimline
+    pr: 48
+    category: iac-security
+    severity_expected: high
+    file: infra/reporting.tf
+    line: 5
+    description: "aws_s3_bucket.reports has acl = public-read (public bucket)."
+    detect_any: ["public", "acl", "public-read", "s3", "exposed", "private"]
+    kind: defect
+  - id: IAC-S3-NOBLOCK
+    wave: iac-ci
+    repo: claimline
+    pr: 48
+    category: iac-security
+    severity_expected: high
+    file: infra/reporting.tf
+    line: 10
+    description: "public access block sets all four flags to false, allowing public access."
+    detect_any: ["public access block", "block_public", "false", "public", "restrict"]
+    kind: defect
+  - id: IAC-SSH-OPEN
+    wave: iac-ci
+    repo: claimline
+    pr: 48
+    category: iac-security
+    severity_expected: high
+    file: infra/reporting.tf
+    line: 24
+    description: "security group allows SSH (port 22) from 0.0.0.0/0."
+    detect_any: ["0.0.0.0/0", "ssh", "port 22", "ingress", "open to the world", "cidr"]
+    kind: defect
+  - id: IAC-DB-PASSWORD
+    wave: iac-ci
+    repo: claimline
+    pr: 48
+    category: iac-security
+    severity_expected: high
+    file: infra/reporting.tf
+    line: 34
+    description: "aws_db_instance has a hardcoded password in the Terraform source."
+    detect_any: ["hardcoded", "password", "secret", "plaintext", "credential", "variable", "secrets manager"]
+    kind: defect
+  - id: IAC-DB-UNENCRYPTED
+    wave: iac-ci
+    repo: claimline
+    pr: 48
+    category: iac-security
+    severity_expected: medium
+    file: infra/reporting.tf
+    line: 35
+    description: "aws_db_instance storage_encrypted = false."
+    detect_any: ["encrypt", "storage_encrypted", "at rest", "unencrypted"]
+    kind: defect
+  - id: IAC-DB-PUBLIC
+    wave: iac-ci
+    repo: claimline
+    pr: 48
+    category: iac-security
+    severity_expected: high
+    file: infra/reporting.tf
+    line: 36
+    description: "aws_db_instance publicly_accessible = true."
+    detect_any: ["publicly_accessible", "public", "exposed", "internet"]
+    kind: defect
+  - id: IAC-DOCKER-LATEST
+    wave: iac-ci
+    repo: claimline
+    pr: 48
+    category: iac-security
+    severity_expected: low
+    file: infra/Dockerfile.batch
+    line: 1
+    description: "Dockerfile uses python:latest (unpinned base image)."
+    detect_any: ["latest", "pin", "unpinned", "tag", "reproducible", "base image"]
+    kind: defect
+  - id: IAC-DOCKER-ADD-REMOTE
+    wave: iac-ci
+    repo: claimline
+    pr: 48
+    category: iac-security
+    severity_expected: medium
+    file: infra/Dockerfile.batch
+    line: 3
+    description: "Dockerfile ADDs a remote URL and executes it (supply-chain / integrity risk)."
+    detect_any: ["add", "remote", "url", "copy", "curl", "verify", "supply chain", "checksum"]
+    kind: defect
+  - id: IAC-DOCKER-ROOT
+    wave: iac-ci
+    repo: claimline
+    pr: 48
+    category: iac-security
+    severity_expected: medium
+    file: infra/Dockerfile.batch
+    line: 10
+    description: "Container runs as root (USER root, no unprivileged user)."
+    detect_any: ["root", "non-root", "user", "privilege", "unprivileged"]
+    kind: defect
+  - id: IAC-GHA-PERMS
+    wave: iac-ci
+    repo: claimline
+    pr: 48
+    category: iac-security
+    severity_expected: medium
+    file: .github/workflows/nightly-probe.yml
+    line: 5
+    description: "workflow grants permissions: write-all (over-broad GITHUB_TOKEN)."
+    detect_any: ["write-all", "permissions", "least privilege", "token", "scope", "broad"]
+    kind: defect
+  - id: IAC-GHA-UNPINNED
+    wave: iac-ci
+    repo: claimline
+    pr: 48
+    category: iac-security
+    severity_expected: medium
+    file: .github/workflows/nightly-probe.yml
+    line: 11
+    description: "uses actions/checkout@main (mutable ref, not pinned to a SHA)."
+    detect_any: ["pin", "sha", "@main", "mutable", "unpinned", "tag", "commit"]
+    kind: defect
+  - id: IAC-DECOY-AUDIT
+    wave: iac-ci
+    repo: claimline
+    pr: 48
+    category: iac-security
+    severity_expected: informational
+    file: infra/reporting.tf
+    line: 48
+    description: "aws_s3_bucket.audit is private + KMS-encrypted + access-blocked; flagging is a FP."
+    detect_any: ["public", "unencrypt", "exposed"]
+    kind: decoy
