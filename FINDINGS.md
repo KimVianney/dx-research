@@ -374,3 +374,28 @@ CHILL**. Still missed: SQLi (dead fn), SSRF, resource-leak, XSS (unused cmp), an
 flipped to missed (variance). **Clean two-cause resolution: assertive fixes performance/soft
 misses; it does NOT recover unreachable/dead-code security defects — those are reachability
 gating.** +3 bonus (dedup-key, units, requests-dep) again. See results/profiles.md.
+
+## W4 linter-toggle (PR #14, ruff disabled in config) + CI-annotation ingestion (W8 preview)
+
+Config: `.coderabbit.yaml` with `reviews.tools.ruff.enabled: false`, profile assertive
+(bot confirmed "Review profile: ASSERTIVE", "Configuration used: Path: .coderabbit.yaml").
+Probe `audit.py`: unused `import os` (ruff F401) + md5 (ruff S324), 1 uncalled function.
+- **Result:** exactly **1 inline comment — "Remove the unused `os` import"** — and it was
+  **sourced from GitHub Actions CI, not CodeRabbit's ruff**: the tool block reads
+  `🪛 GitHub Actions: CI / api → [error] Ruff F401`. So disabling CodeRabbit's own ruff did
+  **not** remove the lint finding, because CodeRabbit **also ingests the repo's CI check
+  annotations** and re-surfaces them as review comments (with a proposed-fix diff).
+- **Two independent deterministic channels:** (1) CodeRabbit's built-in linters
+  (`tools.*`, toggleable), and (2) ingested CI/GitHub-Actions annotations (not toggled by
+  `tools.*`). This is also a **W8 (CI integration)** datum: CodeRabbit reads CI failures
+  and ties them to the diff line.
+- **md5 (S324) was NOT flagged** here (only *described* in the walkthrough) even under
+  assertive — the file is a single uncalled helper, consistent with the dead-code/
+  reachability gating seen elsewhere (or run variance). Note the timing nuance: on the W0
+  CHILL runs md5/SQL CI annotations were **not** surfaced (CodeRabbit likely reviewed before
+  CI finished); here the review was manually triggered after CI had already failed, so the CI
+  annotation was available to ingest. CI-annotation ingestion therefore depends on CI having
+  completed before the review runs.
+- Caveat: this partly confounds the intended "does it surface ruff" test (our own CI also
+  runs ruff), but it surfaced a more useful mechanism (CI ingestion) and still shows the
+  built-in ruff toggle alone doesn't stop lint findings.
