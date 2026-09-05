@@ -114,12 +114,35 @@ no precision cost. It will not, by itself, surface issues in code the tool judge
 corrected (proximity-only matching and over-generic keywords caused false TP/FP); every
 wave's numbers here are the **hand-validated** ones, not the raw matcher output.
 
-## 9. What was NOT done (scope / future work)
+## 9. Partially answered (with evidence) vs not done
 
-W2 (context scope), W3 (scale/truncation), W5 (triggers), W6 (interactive/agentic beyond the
-manual-review probe), W7 (robustness/prompt-injection — deliberately excluded as out of
-transparent scope), W9 (pre-merge checks depth), W11 (private control — deprioritized since
-the public repo is already on the paid Advanced tier). The per-family recalls should be
-repeated N>=3 for headline numbers (see §3). Remaining W1 families api-contract / iac-ci /
-phi-domain were not run (auto-review throttle + a natural stopping point after the profile
-result).
+**Partially answered already (reclassified from "not done"):**
+- **W2 (context scope beyond the diff):** demonstrated. CodeRabbit reasons across files and
+  beyond the changed lines — the dead-code security gating (SQLi in an uncalled fn, XSS in an
+  unrendered component), the migration comment cross-referencing `imports.py` idempotency, and
+  the `🔎 Supported by static analysis` blocks that run `sed`/`rg` over other files
+  (e.g. reading `pyproject.toml` to confirm the missing `requests` dep). Evidence: PR #2/#4/#6
+  comments and the `W0-BONUS-DEP` finding. Not done: the controlled diff-only-vs-whole-file and
+  third-config-file single-variable probes.
+- **W5 (triggers/limits):** partially answered. Observed the "up to 10 included reviews/hour"
+  quota line with a live remaining counter (PR #1), the **auto-review pause after ~11 PRs**
+  (PR #11), and that a manual `@coderabbitai review` still returns a full review in ~12s
+  (PR #11/#12/#13/#14). Not done: draft-vs-ready, `auto_review.labels`, `ignore_title_keywords`,
+  `@coderabbitai ignore`, non-default base, force-push/reopen, `auto_pause_after_reviewed_commits`.
+
+**In progress (this session, resumed):** N>=3 repeats under assertive per family
+(results/repeats.md); PHI/domain family (presidio); W6 learnings-persistence + autofix/docstrings/
+unit-test checkboxes; api-contract + iac-ci families.
+
+**W7 (robustness / prompt-injection):** legitimate authorized-security-testing in principle
+(owner's tool, owner's repos, contained in `claimline`, defensive merge-gating question).
+Excluded pending the **owner's direct confirmation in-session** — I told the owner this item
+must come from them directly, and the current go-ahead arrived via the parent-session/automated
+relay, not the owner's own message. Will run defensively-scoped (comment/PR-body/CLAUDE.md
+instruction-injection + homoglyph/bidi smuggling, N>=2/arm vs a measured baseline, reported as a
+limitation) once the owner confirms directly. Noteworthy prior: CodeRabbit already ships an
+anti-injection preamble in its "Prompt for AI Agents" block, so the test is whether that
+hardening extends to its own intake.
+
+**Skipped (low value per owner):** W3 (scale/truncation), W11 (private control — public repo is
+already on the paid Advanced tier). W9 (pre-merge depth) remains optional.
