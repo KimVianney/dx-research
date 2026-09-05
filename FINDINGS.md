@@ -442,3 +442,17 @@ all four lint-backed (S110/B904/etc.); assertive only adds flaky recovery around
 depth on the judgment-heavy miss. CI-annotation ingestion (Ruff S110/B904 under "🪛 GitHub Actions",
 tagged "Source: Pipeline failures") surfaced on #22/#23 but not #21 -> timing-dependent (CI must
 finish before the review), matching W6/W8.
+
+## Priority-1 N>=3 under assertive — correctness (PRs #24/#25/#26)
+
+Recall 9/10, 10/10, 9/10 -> **mean 9.3/10 (93%), range 90-100%**; precision 100% (no decoy
+flagged). Eight of ten defects stable-caught 3/3 (aging-boundary, date-range-inclusive,
+avg-truncation+ZeroDiv, pct-truncation+ZeroDiv, late-fee-sign, top-payer-ordering,
+round-vs-truncate, running-balance-accumulation). Two flaky: the **mutable-default {} (Ruff B006)**
+was missed on #24 only — #24 carried NO CI-annotation block while #25/#26 did ("Source: Pipeline
+failures"), so this miss tracks CI-ingestion TIMING, not review depth; the **timely-filing
+boundary** (`<` vs `<=`) genuinely flipped to FN on #26. Note the single-run CHILL baseline was
+10/10 — so N>=3 REVISES correctness DOWN slightly to 9.3/10: even the strongest family carries a
+~1-defect run-to-run flip, reinforcing that single-run recall over-states stability. Hand-validated:
+lines 37/42 are dual truncation+ZeroDivision defects (manifest detect_any covers both), so
+CodeRabbit's ZeroDivisionError flags there are true positives, not off-target.

@@ -11,7 +11,8 @@ false-positives.
 
 | concurrency | #18,#19,#20 | 6/7, 6/7, 6/7 | **6/7 (86%)** | 86% (no variance) | 100% (0 decoy FP) | stable-caught: wg.Add-in-goroutine, map race, counter race, goroutine leak, append race, missing-unlock; stable-missed: time.Tick ticker leak |
 | error-handling | #21,#22,#23 | 5/7, 4/7, 5/7 | **4.7/7 (67%)** | 57–71% | 100% (0 decoy FP) | stable-caught: swallow-returns-True, missing-`raise from`, broad-except-bad-state, fd-leak-no-`with`; stable-missed: unchecked financial-reversal return; flaky: broad-except→None (1/3), generic-Exception-not-domain-type (1/3) |
-_Baseline for context: security-helpers CHILL single run (PR #8) = 3/9 (33%); error-handling CHILL single run (PR #11) = 4/7 (57%)._
+| correctness | #24,#25,#26 | 9/10, 10/10, 9/10 | **9.3/10 (93%)** | 90–100% | 100% (0 decoy FP) | stable-caught (3/3): aging-boundary, date-range, avg //+ZeroDiv, pct //+ZeroDiv, late-fee-sign, top-payer-order, round-vs-truncate, balance-accumulation; flaky: mutable-default B006 (2/3, miss tracked CI-annotation timing on #24), timely-filing boundary (2/3, genuine flip on #26) |
+_Baseline for context: security-helpers CHILL single run (PR #8) = 3/9 (33%); error-handling CHILL single run (PR #11) = 4/7 (57%); correctness CHILL single run (PR #3/#5) = 10/10._
 _(correctness, performance rows appended as their batches complete.)_
 
 **Read so far:** the four *mechanical* error-handling defects (S110 try/except/pass, B904 missing
